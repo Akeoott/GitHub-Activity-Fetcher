@@ -52,3 +52,8 @@ if response.status_code == 200:
     print(f"Rate Limit Reset at: {rate_reset}")
 else:
     print(f"Error: {response.status_code}")
+
+exit = input("Enter anything to exit out: ")
+
+if exit is not None:
+    sys.exit()
