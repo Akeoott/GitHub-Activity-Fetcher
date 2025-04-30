@@ -2,6 +2,8 @@ This API fetcher was made to fetch simple user activity by first entering a user
 
 The results are User Events, Rate Limit, Remaining Requests and Rate Limit Reset time.
 
+IF THERE ARE ANY ISSUES WITH THE PROGRAM, TELL ME!
+
 Made by Akeoott
 
 https://roadmap.sh/projects/github-user-activity
