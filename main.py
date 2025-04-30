@@ -27,7 +27,7 @@ try:
             repo = input("Enter the name of your repository: ")
 
         url_events = f'https://api.github.com/users/{username}/events'
-        url_repo_events = f'https://api.github.com/users/{username}/{repo}/events'
+        url_repo_events = f'https://api.github.com/repos/{username}/{repo}/events'
 
         while True:
             if selected_fetch == 1:
@@ -81,7 +81,7 @@ try:
         rate_reset = response.headers.get('X-RateLimit-Reset')
 
         if token is None:
-            print("\nSome information may not be present as you have not entered an authorization token!")
+            print("\nSome information may not be present as you have not entered an access token!")
 
         print("\nRate Limit Information:")
         print(f"Rate Limit: {rate_limit} requests per hour")
