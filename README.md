@@ -1,7 +1,7 @@
 This API fetcher was made to fetch simple user activity by first entering a username then an app name or identifier, optionally repo specific with an access token.
 
 The informations you obtain are:
-* User Events
+* User Events (can now be saved inside a json file)
 * Your Rate Limit
 * Remaining Requests
 * Rate Limit Reset time
