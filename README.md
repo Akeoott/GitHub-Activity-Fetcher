@@ -1,4 +1,6 @@
-This API fetcher was made to fetch simple user activity by first entering a username then an app name or identifier, optionally repo specific with an access token.
+GitHub Activity Fetcher is a easy to use portable excecutable wich allows a user to fetch information from another users with GitHub's REST API.
+Just enter a username an identifier and thats it!
+Optionally, one can filter repo specific and enter an access token.
 
 The informations you obtain are:
 * User Events (can now be saved inside a json file)
