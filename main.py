@@ -5,11 +5,16 @@ This program, as explained in the Git repository, is designed to fetch user info
 based on filtering (e.g., via a specific repo) or simply retrieving all publicly available 
 data for a selected GitHub account.
 
-The code is structured around user input. It is split into four functions:
+The code is structured around user input. It is split into five functions:
 1. user_input()
 2. api_request()
 3. response_parsing()
-4. output_formatting()
+4. output_formatting() # Currently a place holder.
+5. data_saving()
+
+WARNING!
+This is fresh code wich was created in one go and is very likely to have bugs.
+If anything goes wrong, bring that to my attention asap.
 """
 
 import requests, sys, pprint, json, time
@@ -29,73 +34,152 @@ github_token_docs_formated = f"Dont know how to get a {GREEN}token{RESET}?\n\033
 selection_error = f"\nSelect a {YELLOW}valid{RESET} option!"
 token_print_format = f"{GREEN}token{RESET}"
 
-def user_input():
-    
-    # Asking what to fetch
-    fetch_type = None
-    while fetch_type not in {1, 2}:
-        try:
-            print("Select what you want to fetch:")
-            print(f"List {GREEN}user{RESET} events (1)")
-            print(f"List {GREEN}repo{RESET} specific user events (2)")
+try:
+    def user_input():
 
-            fetch_type = int(input("\nEnter here: "))
+        # Asking what to fetch
+        fetch_type = None
+        while fetch_type not in {1, 2}:
+            try:
+                print("Select what you want to fetch:")
+                print(f"List {GREEN}user{RESET} events (1)")
+                print(f"List {GREEN}repo{RESET} specific user events (2)")
 
-            if fetch_type not in {1, 2}:
+                fetch_type = int(input("\nEnter here: "))
+
+                if fetch_type not in {1, 2}:
+                    print(selection_error)
+            except ValueError:
                 print(selection_error)
-        except ValueError:
-            print(selection_error)
 
-    print()
-    username = input(f"Enter the {GREEN}username{RESET} of the person you want to fetch from: ")
-    UserAgent = input(f"Enter your {GREEN}app name{RESET} or {GREEN}identifier{RESET} (Can be anything): ")
-    repo = None
-    token = None
+        print()
+        username = input(f"Enter the {GREEN}username{RESET} of the person you want to fetch from: ")
+        UserAgent = input(f"Enter your {GREEN}app name{RESET} or {GREEN}identifier{RESET} (Can be anything): ")
+        repo = None
+        token = None
 
-    # Selecting what url to use as one variable
-    if fetch_type == 1:
-        fetch_url_events = f'https://api.github.com/users/{username}/events'
-    elif fetch_type == 2:
-        repo = input(f"Enter the name of your {GREEN}repository{RESET}: ")
-        fetch_url_events = f'https://api.github.com/repos/{username}/{repo}/events'
+        # Selecting what url to use as one variable
+        if fetch_type == 1:
+            fetch_url_events = f'https://api.github.com/users/{username}/events'
+        elif fetch_type == 2:
+            repo = input(f"Enter the name of your {GREEN}repository{RESET}: ")
+            fetch_url_events = f'https://api.github.com/repos/{username}/{repo}/events'
 
-    # Asking for a token
-    if fetch_type == 1:
-        print(f"You {YELLOW}may{RESET} need a personal access {token_print_format}.")
-        print(github_token_docs_formated)
-        print("\nIf you dont want to enter a token, press enter!")
-        token = input(f"Optional -> Enter your access {token_print_format}: ")
+        # Asking for a token
+        if fetch_type == 1:
+            print(f"You {YELLOW}may{RESET} need a personal access {token_print_format}.")
+            print(github_token_docs_formated)
+            print("\nIf you dont want to enter a token, press enter!")
+            token = input(f"Optional -> Enter your access {token_print_format}: ")
 
-        if len(token) < 40:
-            token = None
+            if len(token) < 40:
+                token = None
 
-    elif fetch_type == 2:
-        print(f"You {YELLOW}require{RESET} a personal access {token_print_format}.")
-        print(github_token_docs_formated)
-        token = input(f'\nEnter your access {token_print_format}: ')
+        elif fetch_type == 2:
+            print(f"You {YELLOW}require{RESET} a personal access {token_print_format}.")
+            print(github_token_docs_formated)
+            token = input(f'\nEnter your access {token_print_format}: ')
 
-    # Confirming input
-    print("Is this correct?")
-    print(f"Username: {GREEN}{username}{RESET}")
-    print(f"App name or identifier: {GREEN}{UserAgent}{RESET}")
-    print(f"Repository: {BLUE if repo == None else GREEN}{repo}{RESET}")
-    print(f"Your token: {BLUE if token == None else GREEN}{token}{RESET}")
+        # Confirming input
+        print("Is this correct?")
+        print(f"Username: {GREEN}{username}{RESET}")
+        print(f"App name or identifier: {GREEN}{UserAgent}{RESET}")
+        print(f"Repository: {BLUE if repo == None else GREEN}{repo}{RESET}")
+        print(f"Your token: {BLUE if token == None else GREEN}{token}{RESET}")
 
-    confirm_user_input = input("Do you want to continue? (y/n): ").lower()
-    if confirm_user_input == "y":
+        confirm_user_input = input("Do you want to continue? (y/n): ").lower()
+        if confirm_user_input == "y":
+            pass
+        else:
+            print("Exiting...")
+            time.sleep(3)
+            sys.exit()
+
+        return fetch_url_events, username, UserAgent, token
+
+
+    def api_request(fetch_url_events, username, UserAgent, token):
+        headers = {
+            'User-Agent': UserAgent,
+            'Accept': 'application/vnd.github.v3+json',
+            'X-GitHub-Api-Version': '2022-11-28'
+        }
+        if token:
+            headers['Authorization'] = f'token {token}'
+
+        response = requests.get(fetch_url_events, headers=headers)
+
+        # Fetching data
+        if response.status_code == 200:
+            try:
+                data = response.json()
+            except json.JSONDecodeError:
+                print(f"\n{RED}Failed to parse JSON. GitHub may have returned HTML instead.")
+                print("Raw response content:\n", response.text)
+                input("\nPress Enter To Exit...")
+                sys.exit()
+            if not data:
+                print(f"{YELLOW}No events found. The user or repository might be inactive or private.")
+        else:
+            print(f"Error: {response.status_code}")
+            print(f"More informations under: {github_restapi_docs}")
+            input("\nPress Enter To Exit...")
+            sys.exit()
+
+        # Fetching rate limits
+        rate_limit = response.headers.get('X-RateLimit-Limit')
+        rate_remaining = response.headers.get('X-RateLimit-Remaining')
+        rate_reset = response.headers.get('X-RateLimit-Reset')
+
+        return data, rate_limit, rate_remaining, rate_reset, token, username
+
+
+    # response_parsing() be used in future updates. Currently its just a place holder.
+    def response_parsing():
         pass
-    else:
-        print("Exiting...")
-        time.sleep(3)
-        sys.exit()
 
-def api_request():
-    pass
 
-def response_parsing():
-    pass
+    def output_formatting(data, rate_limit, rate_remaining, rate_reset, token, username):
 
-def output_formatting():
-    pass
+        print(f"\n{GREEN}User Events:{RESET} ")
+        pprint.pprint(data)
 
-user_input()
+        if token is None:
+            print("\nSome information may not be present as you have not entered an access token!")
+
+        print("\nRate Limit Information:")
+        print(f"Rate Limit: {rate_limit} requests per hour")
+        print(f"Remaining Requests: {rate_remaining} requests left")
+        print(f"Rate Limit Reset at: {time.ctime(int(rate_reset))}")
+
+        return data, username
+
+
+    def data_saving(data, username):
+        try:
+            if input(f"\n{GREEN}Save{RESET} as json? ({RED}will overwrite existing files with the same username!{RESET})\n(y/n): ").lower() == "y":
+                with open(f"{username}-data.json", "w") as f:
+                    json.dump(data, f, indent=4)
+
+                print(f"\n{username}-data.json was {GREEN}created{RESET} in the same directory as this program!")
+        
+        except PermissionError as e:
+            print(f"\nYou dont have the {RED}permission{RESET} to create a file in this directory.")
+            print(f"{RED}{type(e).__name__}:{RESET} {e}")
+
+
+    # Calling fuctions and passing them on
+    input = user_input()
+    response = api_request(*input)
+    saving = output_formatting(*response)
+    data_saving(*saving)    
+
+# Error handeling for unexpected events
+except Exception as e:
+    print(f"\n{RED}An unexpected error occurred:")
+    print(f"{RED}{type(e).__name__}:{RESET} {e}")
+    print("\nPlease report this issue with the above error message on GitHub 'Akeoots/GitHub-Activity-Fetcher/issues'")
+
+# Exit sequence
+input("\nPress Enter To Exit...")
+sys.exit()
