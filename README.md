@@ -8,9 +8,13 @@ The informations you obtain are:
 * Remaining Requests
 * Rate Limit Reset time
 
-IF THERE ARE ANY ISSUES WITH THE PROGRAM, TELL ME!
+> [!IMPORTANT]
+> IF THERE ARE ANY ISSUES WITH THE PROGRAM, TELL ME!
 
-> Note: This is an early version. More updates may come in the future!
+> [!NOTE]
+> This is early in development. More updates may come in the future!
+>
+> It is expected to undergo massive changes.
 
 Made by Akeoott
 
