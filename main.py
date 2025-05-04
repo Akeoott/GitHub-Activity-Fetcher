@@ -2,19 +2,33 @@ import requests,sys,pprint,json,time
 from colorama import Fore, init
 init(autoreset=True)
 
+
+""" Read me!
+This program, as said in the git is here to simply fetch user information based on either filtering,
+via a repo or just fetching EVERYTHING that is public on the selected account.
+
+Most of this code is user input. This is split into two parts,
+User input part and then Post critical user input.
+"""
+
+# Variables to prevent repetetive links or text and make code a tiny bit more readable
 GitHub_RESTAPI_docs = "https://docs.github.com/rest/using-the-rest-api/troubleshooting-the-rest-api?apiVersion=2022-11-28"
 GitHub_token_docs = "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens"
 GitHub_token_docs_formated = f"Dont know how to get a {Fore.GREEN}token{Fore.RESET}?\n\033]8;;{GitHub_token_docs}\033\\Visit this website.\033]8;;\033\\"
 
 Select_Valid = f"\nSelect a {Fore.YELLOW}valid{Fore.RESET} option!"
 
+
+
+""" User input part """
+
+
 try:
     # User input handling
     while True:
         try:
-            print(f"Select what you want to fetch:\nList {Fore.GREEN}repository{Fore.RESET} events (enter 1)\nList {Fore.GREEN}user{Fore.RESET} events (enter 2)\n")
-            
             # Asking what one specifically wants to fetch
+            print(f"Select what you want to fetch:\nList {Fore.GREEN}repository{Fore.RESET} events (enter 1)\nList {Fore.GREEN}user{Fore.RESET} events (enter 2)\n")
             selected_fetch = int(input("Enter here: "))
 
             fetch_type_possible = {1,2}
@@ -65,6 +79,10 @@ try:
         time.sleep(3)
         sys.exit()
 
+
+    """ Post critical user input """
+
+
     headers = {
         'User-Agent': UserAgent,
         'Accept': 'application/vnd.github.v3+json',
@@ -113,6 +131,7 @@ try:
             if input(f"\n{Fore.GREEN}Save{Fore.RESET} as json? ({Fore.RED}will overwrite existing files with the same username!{Fore.RESET})\n(y/n): ").lower() == "y":
                 with open(f"{username}-data.json", "w") as f:
                     json.dump(data, f, indent=4)
+
                 print(f"\n{username}-data.json was {Fore.GREEN}created{Fore.RESET} in the same dir as this program!")
         
         except PermissionError as e:
