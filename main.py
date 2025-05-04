@@ -1,15 +1,18 @@
+"""
+README
+
+This program, as explained in the Git repository, is designed to fetch user information
+based on filtering (e.g., via a specific repo) or simply retrieving all publicly available 
+data for a selected GitHub account.
+
+The code is structured around user input. It is split into two phases:
+1. Initial User Input
+2. Post-Critical User Input
+"""
+
 import requests,sys,pprint,json,time
 from colorama import Fore, init
 init(autoreset=True)
-
-
-""" Read me!
-This program, as said in the git is here to simply fetch user information based on either filtering,
-via a repo or just fetching EVERYTHING that is public on the selected account.
-
-Most of this code is user input. This is split into two parts,
-User input part and then Post critical user input.
-"""
 
 # Variables to prevent repetetive links or text and make code a tiny bit more readable
 GitHub_RESTAPI_docs = "https://docs.github.com/rest/using-the-rest-api/troubleshooting-the-rest-api?apiVersion=2022-11-28"
@@ -19,8 +22,7 @@ GitHub_token_docs_formated = f"Dont know how to get a {Fore.GREEN}token{Fore.RES
 Select_Valid = f"\nSelect a {Fore.YELLOW}valid{Fore.RESET} option!"
 
 
-
-""" User input part """
+# Initial User Input
 
 
 try:
@@ -80,7 +82,7 @@ try:
         sys.exit()
 
 
-    """ Post critical user input """
+    # Post-Critical User Input
 
 
     headers = {
