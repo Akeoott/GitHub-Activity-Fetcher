@@ -11,15 +11,21 @@ The code is structured around user input. It is split into two phases:
 """
 
 import requests,sys,pprint,json,time
-from colorama import Fore, init
-init(autoreset=True)
+
+# Create color formatting escape codes
+RED = '\033[91m'
+GREEN = '\033[92m'
+BLUE = '\033[94m'
+YELLOW = '\033[93m'
+RESET = '\033[0m'
+
 
 # Variables to prevent repetetive links or text and make code a tiny bit more readable
 GitHub_RESTAPI_docs = "https://docs.github.com/rest/using-the-rest-api/troubleshooting-the-rest-api?apiVersion=2022-11-28"
 GitHub_token_docs = "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens"
-GitHub_token_docs_formated = f"Dont know how to get a {Fore.GREEN}token{Fore.RESET}?\n\033]8;;{GitHub_token_docs}\033\\Visit this website.\033]8;;\033\\"
+GitHub_token_docs_formated = f"Dont know how to get a {GREEN}token{RESET}?\n\033]8;;{GitHub_token_docs}\033\\Visit this website.\033]8;;\033\\"
 
-Select_Valid = f"\nSelect a {Fore.YELLOW}valid{Fore.RESET} option!"
+Select_Valid = f"\nSelect a {YELLOW}valid{RESET} option!"
 
 
 # Initial User Input
@@ -30,7 +36,7 @@ try:
     while True:
         try:
             # Asking what one specifically wants to fetch
-            print(f"Select what you want to fetch:\nList {Fore.GREEN}repository{Fore.RESET} events (enter 1)\nList {Fore.GREEN}user{Fore.RESET} events (enter 2)\n")
+            print(f"Select what you want to fetch:\nList {GREEN}repository{RESET} events (enter 1)\nList {GREEN}user{RESET} events (enter 2)\n")
             selected_fetch = int(input("Enter here: "))
 
             fetch_type_possible = {1,2}
@@ -42,19 +48,19 @@ try:
         except ValueError:
             print(Select_Valid)
 
-    username = input(f"\nEnter the {Fore.GREEN}username{Fore.RESET} of the person you want to fetch from: ")
-    UserAgent = input(f"Enter your {Fore.GREEN}app name{Fore.RESET} or {Fore.GREEN}identifier{Fore.RESET}: ")
+    username = input(f"\nEnter the {GREEN}username{RESET} of the person you want to fetch from: ")
+    UserAgent = input(f"Enter your {GREEN}app name{RESET} or {GREEN}identifier{RESET}: ")
 
     repo = None
 
     if selected_fetch == 1:
-        repo = input(f"Enter the name of your {Fore.GREEN}repository{Fore.RESET}: ")
+        repo = input(f"Enter the name of your {GREEN}repository{RESET}: ")
 
     url_events = f'https://api.github.com/users/{username}/events'
     url_repo_events = f'https://api.github.com/repos/{username}/{repo}/events'
 
     # Asking for a token
-    token_print_format = f"{Fore.GREEN}token{Fore.RESET}"
+    token_print_format = f"{GREEN}token{RESET}"
 
     if selected_fetch == 1:
         print(f"You require a personal access {token_print_format}.")
@@ -62,16 +68,16 @@ try:
         token = input(f'\nEnter your access {token_print_format} (case sensitive): ')
 
     elif selected_fetch == 2:
-        print(f"You {Fore.YELLOW}may{Fore.RESET} need a personal access {token_print_format} (higher rate limits).")
+        print(f"You {YELLOW}may{RESET} need a personal access {token_print_format} (higher rate limits).")
         print(GitHub_token_docs_formated)
         token = input(f'\nOptional -> Enter your access {token_print_format}. If not, enter "no" (case sensitive): ')
         if token == "no":
             token = None
     
     # Confirming input is correct
-    print(f"\nIs this correct?\nUsername: {Fore.GREEN}{username}{Fore.RESET}\nApp name or identifier: {Fore.GREEN}{UserAgent}{Fore.RESET}\nRepository: {Fore.BLUE if repo == None else Fore.GREEN}{repo}{Fore.RESET}\nYour token: {Fore.BLUE if token == None else Fore.GREEN}{token}{Fore.RESET}\n")
+    print(f"\nIs this correct?\nUsername: {GREEN}{username}{RESET}\nApp name or identifier: {GREEN}{UserAgent}{RESET}\nRepository: {BLUE if repo == None else GREEN}{repo}{RESET}\nYour token: {BLUE if token == None else GREEN}{token}{RESET}\n")
     if token is None:
-        print(f"(Your {token_print_format} is {Fore.BLUE}None{Fore.RESET}, reason is you either have entered it wrong or you didnt want to enter one)\n")
+        print(f"(Your {token_print_format} is {BLUE}None{RESET}, reason is you either have entered it wrong or you didnt want to enter one)\n")
 
     confirm = input("Do you want to continue? (y/n): ").lower()
     if confirm == "y":
@@ -104,15 +110,15 @@ try:
         try:
             data = response.json()
         except json.JSONDecodeError:
-            print(f"\n{Fore.RED}Failed to parse JSON. GitHub may have returned HTML instead.")
+            print(f"\n{RED}Failed to parse JSON. GitHub may have returned HTML instead.")
             print("Raw response content:\n", response.text)
             input("\nPress Enter To Exit...")
             sys.exit()
 
         if not data:
-            print(f"{Fore.YELLOW}No events found. The user or repository might be inactive or private.")
+            print(f"{YELLOW}No events found. The user or repository might be inactive or private.")
 
-        print(f"\n{Fore.GREEN}User Events: ")
+        print(f"\n{GREEN}User Events: ")
         pprint.pprint(data)
 
         # Fetching rate limits
@@ -130,15 +136,15 @@ try:
 
         # Optionally creating json file
         try:
-            if input(f"\n{Fore.GREEN}Save{Fore.RESET} as json? ({Fore.RED}will overwrite existing files with the same username!{Fore.RESET})\n(y/n): ").lower() == "y":
+            if input(f"\n{GREEN}Save{RESET} as json? ({RED}will overwrite existing files with the same username!{RESET})\n(y/n): ").lower() == "y":
                 with open(f"{username}-data.json", "w") as f:
                     json.dump(data, f, indent=4)
 
-                print(f"\n{username}-data.json was {Fore.GREEN}created{Fore.RESET} in the same dir as this program!")
+                print(f"\n{username}-data.json was {GREEN}created{RESET} in the same dir as this program!")
         
         except PermissionError as e:
-            print(f"\nYou dont have the {Fore.RED}permission{Fore.RESET} to create a file in this directory.")
-            print(f"{Fore.RED}{type(e).__name__}:{Fore.RESET} {e}")
+            print(f"\nYou dont have the {RED}permission{RESET} to create a file in this directory.")
+            print(f"{RED}{type(e).__name__}:{RESET} {e}")
 
     else:
         print(f"Error: {response.status_code}")
@@ -146,8 +152,8 @@ try:
 
 # Error handeling for unexpected errors as I often do silly mistakes
 except Exception as e:
-    print(f"\n{Fore.RED}An unexpected error occurred:")
-    print(f"{Fore.RED}{type(e).__name__}:{Fore.RESET} {e}")
+    print(f"\n{RED}An unexpected error occurred:")
+    print(f"{RED}{type(e).__name__}:{RESET} {e}")
     print("\nPlease report this issue with the above error message on GitHub 'Akeoots/GitHub-Activity-Fetcher/issues'.")
 
 # Exit sequence
