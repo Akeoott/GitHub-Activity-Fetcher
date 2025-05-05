@@ -169,8 +169,8 @@ try:
 
 
     # Calling fuctions and passing them on
-    input = user_input()
-    response = api_request(*input)
+    input_data = user_input()
+    response = api_request(*input_data)
     saving = output_formatting(*response)
     data_saving(*saving)    
 
