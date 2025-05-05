@@ -7,8 +7,8 @@ A lightweight Python tool that allows you to fetch and view GitHub user activity
 ## 🧠 Features
 
 - Fetches:
-  - A user's **general public activity** (`/users/:username/events`)
-  - A user's **repo-specific activity** (`/repos/:username/:repo/events`)
+  - A user's **general public activity** (`/users/<username>/events`)
+  - A user's **repo-specific activity** (`/repos/<username>/<repo>/events`)
 - Provides **rate limit feedback** after each request
 - Pretty-prints structured event data
 - Allows **JSON saving** of fetched data (with overwrite and fallback directory support)
@@ -100,10 +100,13 @@ This program is **released as an executable**, but if you’re on Linux or are a
    pip3 install requests
    ```
 
-3. **Run the program directly** from the source:
-   ```bash
-   python3 main.py
-   ```
+3. **Run the program directly** from the source code of the version:
+   * [Archived versions](https://github.com/Akeoottt/GitHub-Activity-Fetcher/tree/main/archive/source-code)
+     * v1.2.1.py
+     * v1.2.0.py
+   * [Most recent update](https://github.com/Akeoottt/GitHub-Activity-Fetcher/blob/main/main.py)
+     * main.py
+   
 
 This will allow you to interact with the program as expected. Make sure to follow the prompts to fetch GitHub activity.
 
@@ -112,6 +115,6 @@ This will allow you to interact with the program as expected. Make sure to follo
 ## ✨ Credit
 
 - Terminal coloring uses ANSI sequences; special thanks to `CosmicBit128` for reference styling
-- Developed by **Akeoott**, in love with rhythm games and Python
+- Developed by **Akeoott**
 
 https://roadmap.sh/projects/github-user-activity
