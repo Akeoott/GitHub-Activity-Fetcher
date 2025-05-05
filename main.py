@@ -13,11 +13,11 @@ The code is structured around user input. It is split into five functions:
 5. data_saving()
 
 WARNING!
-This is fresh code wich was created in one go and is very likely to have bugs.
+This is fresh code which was created in one go and is very likely to have bugs.
 If anything goes wrong, bring that to my attention asap.
 """
 
-import requests, sys, pprint, json, time
+import requests, sys, os, pprint, json, time
 
 # Credit coloring to CosmicBit128
 RED = '\033[91m'
@@ -26,7 +26,7 @@ BLUE = '\033[94m'
 YELLOW = '\033[93m'
 RESET = '\033[0m'
 
-# Variables to prevent repetetive links or text and make the code a tiny bit more readable
+# Variables to prevent repetitive links or text and make the code a tiny bit more readable
 github_restapi_docs = "https://docs.github.com/rest/using-the-rest-api/troubleshooting-the-rest-api?apiVersion=2022-11-28"
 github_token_docs = "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens"
 github_token_docs_formated = f"Dont know how to get a {GREEN}token{RESET}?\n\033]8;;{github_token_docs}\033\\Visit this website.\033]8;;\033\\"
@@ -34,71 +34,72 @@ github_token_docs_formated = f"Dont know how to get a {GREEN}token{RESET}?\n\033
 selection_error = f"\nSelect a {YELLOW}valid{RESET} option!"
 token_print_format = f"{GREEN}token{RESET}"
 
-try:
-    def user_input():
 
-        # Asking what to fetch
-        fetch_type = None
-        while fetch_type not in {1, 2}:
-            try:
-                print("Select what you want to fetch:")
-                print(f"List {GREEN}user{RESET} events (1)")
-                print(f"List {GREEN}repo{RESET} specific user events (2)")
 
-                fetch_type = int(input("\nEnter here: "))
+def user_input():
 
-                if fetch_type not in {1, 2}:
-                    print(selection_error)
-            except ValueError:
+    # Asking what to fetch
+    fetch_type = None
+    while fetch_type not in {1, 2}:
+        try:
+            print("Select what you want to fetch:")
+            print(f"List {GREEN}user{RESET} events (1)")
+            print(f"List {GREEN}repo{RESET} specific user events (2)")
+
+            fetch_type = int(input("\nEnter here: "))
+
+            if fetch_type not in {1, 2}:
                 print(selection_error)
+        except ValueError:
+            print(selection_error)
 
-        print()
-        username = input(f"Enter the {GREEN}username{RESET} of the person you want to fetch from: ")
-        UserAgent = input(f"Enter your {GREEN}app name{RESET} or {GREEN}identifier{RESET} (Can be anything): ")
-        repo = None
-        token = None
+    print()
+    username = input(f"Enter the {GREEN}username{RESET} of the person you want to fetch from: ")
+    UserAgent = input(f"Enter your {GREEN}app name{RESET} or {GREEN}identifier{RESET} (Can be anything): ")
+    repo = None
+    token = None
 
-        # Selecting what url to use as one variable
-        if fetch_type == 1:
-            fetch_url_events = f'https://api.github.com/users/{username}/events'
-        elif fetch_type == 2:
-            repo = input(f"Enter the name of your {GREEN}repository{RESET}: ")
-            fetch_url_events = f'https://api.github.com/repos/{username}/{repo}/events'
+    # Selecting what url to use as one variable
+    if fetch_type == 1:
+        endpoint = f'https://api.github.com/users/{username}/events'
+    elif fetch_type == 2:
+        repo = input(f"Enter the name of your {GREEN}repository{RESET}: ")
+        endpoint = f'https://api.github.com/repos/{username}/{repo}/events'
 
-        # Asking for a token
-        if fetch_type == 1:
-            print(f"You {YELLOW}may{RESET} need a personal access {token_print_format}.")
-            print(github_token_docs_formated)
-            print("\nIf you dont want to enter a token, press enter!")
-            token = input(f"Optional -> Enter your access {token_print_format}: ")
+    # Asking for a token
+    if fetch_type == 1:
+        print(f"You {YELLOW}may{RESET} need a personal access {token_print_format}.")
+        print(github_token_docs_formated)
+        print("\nIf you dont want to enter a token, press enter!")
+        token = input(f"Optional -> Enter your access {token_print_format}: ")
 
-            if len(token) < 40:
-                token = None
+        if token == "":
+            token = None
 
-        elif fetch_type == 2:
-            print(f"You {YELLOW}require{RESET} a personal access {token_print_format}.")
-            print(github_token_docs_formated)
-            token = input(f'\nEnter your access {token_print_format}: ')
+    elif fetch_type == 2:
+        print(f"You {RED}require{RESET} a personal access {token_print_format}.")
+        print(github_token_docs_formated)
+        token = input(f'\nEnter your access {token_print_format}: ')
 
-        # Confirming input
-        print("Is this correct?")
-        print(f"Username: {GREEN}{username}{RESET}")
-        print(f"App name or identifier: {GREEN}{UserAgent}{RESET}")
-        print(f"Repository: {BLUE if repo == None else GREEN}{repo}{RESET}")
-        print(f"Your token: {BLUE if token == None else GREEN}{token}{RESET}")
+    # Confirming input
+    print("Is this correct?")
+    print(f"Username: {GREEN}{username}{RESET}")
+    print(f"App name or identifier: {GREEN}{UserAgent}{RESET}")
+    print(f"Repository: {BLUE if repo == None else GREEN}{repo}{RESET}")
+    print(f"Your token: {BLUE if token is None else GREEN}{'[HIDDEN]' if token else 'None'}{RESET}")
 
-        confirm_user_input = input("Do you want to continue? (y/n): ").lower()
-        if confirm_user_input == "y":
-            pass
-        else:
-            print("Exiting...")
-            time.sleep(3)
-            sys.exit()
+    confirm_user_input = input("Do you want to continue? (y/n): ").lower()
+    if confirm_user_input == "y":
+        pass
+    else:
+        print("Exiting...")
+        time.sleep(3)
+        sys.exit()
 
-        return fetch_url_events, username, UserAgent, token
+    return endpoint, username, UserAgent, token
 
-
-    def api_request(fetch_url_events, username, UserAgent, token):
+try:
+    def api_request(endpoint, username, UserAgent, token):
         headers = {
             'User-Agent': UserAgent,
             'Accept': 'application/vnd.github.v3+json',
@@ -107,7 +108,7 @@ try:
         if token:
             headers['Authorization'] = f'token {token}'
 
-        response = requests.get(fetch_url_events, headers=headers)
+        response = requests.get(endpoint, headers=headers)
 
         # Fetching data
         if response.status_code == 200:
@@ -121,8 +122,17 @@ try:
             if not data:
                 print(f"{YELLOW}No events found. The user or repository might be inactive or private.")
         else:
-            print(f"Error: {response.status_code}")
-            print(f"More informations under: {github_restapi_docs}")
+            status_messages = {
+                404: "Not Found",
+                403: "Forbidden",
+                429: "Too Many Requests",
+                400: "Bad Request",
+                401: "Unauthorized (token invalid)"
+            }
+            status_error_message = status_messages.get(response.status_code, "")
+
+            print(f"Code: {response.status_code} {status_error_message}")
+            print(f"More information under: {github_restapi_docs}")
             input("\nPress Enter To Exit...")
             sys.exit()
 
@@ -134,11 +144,6 @@ try:
         return data, rate_limit, rate_remaining, rate_reset, token, username
 
 
-    # response_parsing() be used in future updates. Currently its just a place holder.
-    def response_parsing():
-        pass
-
-
     def output_formatting(data, rate_limit, rate_remaining, rate_reset, token, username):
 
         print(f"\n{GREEN}User Events:{RESET} ")
@@ -147,17 +152,16 @@ try:
         if token is None:
             print("\nSome information may not be present as you have not entered an access token!")
 
-        print("\nRate Limit Information:")
+        print("\nRate Limit information:")
         print(f"Rate Limit: {rate_limit} requests per hour")
         print(f"Remaining Requests: {rate_remaining} requests left")
         print(f"Rate Limit Reset at: {time.ctime(int(rate_reset))}")
 
-        return data, username
 
-
-    def data_saving(data, username):
+    def data_saving(data, username, *args):
+        failed_to_save = False
         try:
-            if input(f"\n{GREEN}Save{RESET} as json? ({RED}will overwrite existing files with the same username!{RESET})\n(y/n): ").lower() == "y":
+            if input(f"\n{GREEN}Save{RESET} as json? ({RED}will overwrite existing files with the same username!{RESET})\n(y/n): ").strip().lower() == "y":
                 with open(f"{username}-data.json", "w") as f:
                     json.dump(data, f, indent=4)
 
@@ -165,21 +169,42 @@ try:
         
         except PermissionError as e:
             print(f"\nYou dont have the {RED}permission{RESET} to create a file in this directory.")
-            print(f"{RED}{type(e).__name__}:{RESET} {e}")
+            print(f"{RED}{type(e).__name__}:{RESET} {e}\n")
+            failed_to_save = True
+
+        if failed_to_save:
+            while True:
+                directory = input(f"Enter an {YELLOW}alternative{RESET} directory path or {RED}exit{RESET} out of saving the file by pressing {GREEN}enter{RESET}: ")
+                if directory == "":
+                    break
+                else:
+                    if os.path.exists(directory):
+                        if os.path.isdir(directory):
+                            
+                            filepath = os.path.join(directory, f"{username}-data.json")
+                            with open(filepath, "w") as f:
+                                json.dump(data, f, indent=4)
+
+                            print(f"\n{username}-data.json was {GREEN}created{RESET} at: {filepath}")
+                            break
+                        else:
+                            print("Path isnt a directory!")        
+                    else:
+                        print("Path does not exist!")
 
 
-    # Calling fuctions and passing them on
+    # Calling functions and passing them on
     input_data = user_input()
     response = api_request(*input_data)
-    saving = output_formatting(*response)
-    data_saving(*saving)    
+    output_formatting(*response)
+    data_saving(*response)    
 
-# Error handeling for unexpected events
+# Error handling for unexpected events
 except Exception as e:
     print(f"\n{RED}An unexpected error occurred:")
     print(f"{RED}{type(e).__name__}:{RESET} {e}")
     print("\nPlease report this issue with the above error message on GitHub 'Akeoots/GitHub-Activity-Fetcher/issues'")
-
+# informations
 # Exit sequence
 input("\nPress Enter To Exit...")
 sys.exit()
