@@ -26,12 +26,12 @@ YELLOW = '\033[93m'
 RESET = '\033[0m'
 
 # Variables to prevent repetitive links or text and make the code a tiny bit more readable
-github_restapi_docs = "https://docs.github.com/rest/using-the-rest-api/troubleshooting-the-rest-api?apiVersion=2022-11-28"
-github_token_docs = "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens"
-github_token_docs_formated = f"Dont know how to get a {GREEN}token{RESET}?\n\033]8;;{github_token_docs}\033\\Visit this website.\033]8;;\033\\"
+RESTAPI_DOCS = "https://docs.github.com/rest/using-the-rest-api/troubleshooting-the-rest-api?apiVersion=2022-11-28"
+TOKEN_DOCS = "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens"
+TOKEN_DOCS_FORMATED = f"Dont know how to get a {GREEN}token{RESET}?\n\033]8;;{TOKEN_DOCS}\033\\Visit this website.\033]8;;\033\\"
 
-selection_error = f"\nSelect a {YELLOW}valid{RESET} option!"
-token_print_format = f"{GREEN}token{RESET}"
+SELECTION_ERROR = f"\nSelect a {YELLOW}valid{RESET} option!"
+TOKEN_PRINT_FORMAT = f"{GREEN}token{RESET}"
 
 
 
@@ -48,13 +48,13 @@ def user_input():
             fetch_type = int(input("\nEnter here: "))
 
             if fetch_type not in {1, 2}:
-                print(selection_error)
+                print(SELECTION_ERROR)
         except ValueError:
-            print(selection_error)
+            print(SELECTION_ERROR)
 
     print()
     username = input(f"Enter the {GREEN}username{RESET} of the person you want to fetch from: ")
-    UserAgent = input(f"Enter your {GREEN}app name{RESET} or {GREEN}identifier{RESET} (Can be anything): ")
+    useragent = input(f"Enter your {GREEN}app name{RESET} or {GREEN}identifier{RESET} (Can be anything): ")
     repo = None
     token = None
 
@@ -67,40 +67,40 @@ def user_input():
 
     # Asking for a token
     if fetch_type == 1:
-        print(f"You {YELLOW}may{RESET} need a personal access {token_print_format}.")
-        print(github_token_docs_formated)
+        print(f"You {YELLOW}may{RESET} need a personal access {TOKEN_PRINT_FORMAT}.")
+        print(TOKEN_DOCS_FORMATED)
         print("\nIf you dont want to enter a token, press enter!")
-        token = input(f"Optional -> Enter your access {token_print_format}: ")
+        token = input(f"Optional -> Enter your access {TOKEN_PRINT_FORMAT}: ")
 
         if token == "":
             token = None
 
     elif fetch_type == 2:
-        print(f"You {RED}require{RESET} a personal access {token_print_format}.")
-        print(github_token_docs_formated)
-        token = input(f'\nEnter your access {token_print_format}: ')
+        print(f"You {RED}require{RESET} a personal access {TOKEN_PRINT_FORMAT}.")
+        print(TOKEN_DOCS_FORMATED)
+        token = input(f'\nEnter your access {TOKEN_PRINT_FORMAT}: ')
 
     # Confirming input
     print("Is this correct?")
     print(f"Username: {GREEN}{username}{RESET}")
-    print(f"App name or identifier: {GREEN}{UserAgent}{RESET}")
+    print(f"App name or identifier: {GREEN}{useragent}{RESET}")
     print(f"Repository: {BLUE if repo == None else GREEN}{repo}{RESET}")
     print(f"Your token: {BLUE if token is None else GREEN}{'[HIDDEN]' if token else 'None'}{RESET}")
 
-    confirm_user_input = input("Do you want to continue? (y/n): ").lower()
-    if confirm_user_input == "y":
+    confirm_input = input("Do you want to continue? (y/n): ").lower()
+    if confirm_input == "y":
         pass
     else:
         print("Exiting...")
         time.sleep(3)
         sys.exit()
 
-    return endpoint, username, UserAgent, token
+    return endpoint, username, useragent, token
 
 try:
-    def api_request(endpoint, username, UserAgent, token):
+    def api_request(endpoint, username, useragent, token):
         headers = {
-            'User-Agent': UserAgent,
+            'User-Agent': useragent,
             'Accept': 'application/vnd.github.v3+json',
             'X-GitHub-Api-Version': '2022-11-28'
         }
@@ -131,7 +131,7 @@ try:
             status_error_message = status_messages.get(response.status_code, "")
 
             print(f"Code: {response.status_code} {status_error_message}")
-            print(f"More information under: {github_restapi_docs}")
+            print(f"More information under: {RESTAPI_DOCS}")
             input("\nPress Enter To Exit...")
             sys.exit()
 
@@ -143,7 +143,7 @@ try:
         return data, rate_limit, rate_remaining, rate_reset, token, username
 
 
-    def output_formatting(data, rate_limit, rate_remaining, rate_reset, token, username):
+    def output_formatting(data, rate_limit, rate_remaining, rate_reset, token, *args):
 
         print(f"\n{GREEN}User Events:{RESET} ")
         pprint.pprint(data)
