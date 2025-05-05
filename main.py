@@ -9,8 +9,7 @@ The code is structured around user input. It is split into five functions:
 1. user_input()
 2. api_request()
 3. response_parsing()
-4. output_formatting() # Currently a place holder.
-5. data_saving()
+4. data_saving()
 
 WARNING!
 This is fresh code which was created in one go and is very likely to have bugs.
