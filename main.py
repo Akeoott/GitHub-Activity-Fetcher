@@ -34,7 +34,6 @@ SELECTION_ERROR = f"\nSelect a {YELLOW}valid{RESET} option!"
 TOKEN_PRINT_FORMAT = f"{GREEN}token{RESET}"
 
 
-
 def user_input():
 
     # Asking what to fetch
@@ -81,7 +80,7 @@ def user_input():
         token = input(f'\nEnter your access {TOKEN_PRINT_FORMAT}: ')
 
     # Confirming input
-    print("Is this correct?")
+    print("\nIs this correct?")
     print(f"Username: {GREEN}{username}{RESET}")
     print(f"App name or identifier: {GREEN}{useragent}{RESET}")
     print(f"Repository: {BLUE if repo == None else GREEN}{repo}{RESET}")
@@ -96,6 +95,7 @@ def user_input():
         sys.exit()
 
     return endpoint, username, useragent, token
+
 
 try:
     def api_request(endpoint, username, useragent, token):
@@ -203,6 +203,7 @@ except Exception as e:
     print(f"\n{RED}An unexpected error occurred:")
     print(f"{RED}{type(e).__name__}:{RESET} {e}")
     print("\nPlease report this issue with the above error message on GitHub 'Akeoots/GitHub-Activity-Fetcher/issues'")
+
 # informations
 # Exit sequence
 input("\nPress Enter To Exit...")
