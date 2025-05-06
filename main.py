@@ -18,6 +18,8 @@ If anything goes wrong, bring that to my attention asap.
 
 import requests, sys, os, pprint, json, time
 
+VERSION = 'v2.0.0'
+
 # Credit coloring to CosmicBit128
 RED = '\033[91m'
 GREEN = '\033[92m'
@@ -33,6 +35,7 @@ TOKEN_DOCS_FORMATED = f"Dont know how to get a {GREEN}token{RESET}?\n\033]8;;{TO
 SELECTION_ERROR = f"\nSelect a {YELLOW}valid{RESET} option!"
 TOKEN_PRINT_FORMAT = f"{GREEN}token{RESET}"
 
+print(VERSION)
 
 def user_input():
 
@@ -196,7 +199,7 @@ try:
     input_data = user_input()
     response = api_request(*input_data)
     output_formatting(*response)
-    data_saving(*response)    
+    data_saving(response[0], response[5])
 
 # Error handling for unexpected events
 except Exception as e:

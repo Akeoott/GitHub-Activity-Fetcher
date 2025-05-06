@@ -18,6 +18,8 @@ If anything goes wrong, bring that to my attention asap.
 
 import requests, sys, os, pprint, json, time
 
+VERSION = 'v2.0.0'
+
 # Credit coloring to CosmicBit128
 RED = '\033[91m'
 GREEN = '\033[92m'
@@ -196,7 +198,7 @@ try:
     input_data = user_input()
     response = api_request(*input_data)
     output_formatting(*response)
-    data_saving(*response)    
+    data_saving(response[0], response[5])
 
 # Error handling for unexpected events
 except Exception as e:
