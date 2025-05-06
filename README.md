@@ -100,7 +100,7 @@ This program is **released as an executable**, but if you’re on Linux or are a
    pip3 install requests
    ```
 
-3. **Run the program directly** from the source code of the version:
+3. **Run the program directly** from the source code of the archived versions or run the latest update:
    * [Archived versions](https://github.com/Akeoottt/GitHub-Activity-Fetcher/tree/main/archive/source-code)
      * v1.2.1.py
      * v1.2.0.py
@@ -114,7 +114,7 @@ This will allow you to interact with the program as expected. Make sure to follo
 
 ## ✨ Credit
 
-- Terminal coloring uses ANSI sequences; special thanks to `CosmicBit128` for reference styling
+- Terminal coloring uses ANSI sequences; special thanks to `CosmicBit128` for reference styling and code review
 - Developed by **Akeoott**
 
 https://roadmap.sh/projects/github-user-activity
