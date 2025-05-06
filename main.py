@@ -1,4 +1,4 @@
-# Copyright (c) 2025 Akeoott <amejanin@gmail.com>. Licensed under the MIT Licence.
+# Copyright (c) 2025 Akeoott <amejanin00@gmail.com>. Licensed under the MIT Licence.
 # See the LICENCE file in the repository root for full licence text.
 
 """
@@ -66,6 +66,7 @@ def user_input():
     # Selecting what url to use as one variable
     if fetch_type == 1:
         endpoint = f'https://api.github.com/users/{username}/events'
+
     elif fetch_type == 2:
         repo = input(f"Enter the name of your {GREEN}repository{RESET}: ")
         endpoint = f'https://api.github.com/repos/{username}/{repo}/events'
@@ -75,6 +76,7 @@ def user_input():
         print(f"You {YELLOW}may{RESET} need a personal access {TOKEN_PRINT_FORMAT}.")
         print(TOKEN_DOCS_FORMATED)
         print("\nIf you dont want to enter a token, press enter!")
+
         token = input(f"Optional -> Enter your access {TOKEN_PRINT_FORMAT}: ")
 
         if token == "":
@@ -93,6 +95,7 @@ def user_input():
     print(f"Your token: {BLUE if token is None else GREEN}{'[HIDDEN]' if token else 'None'}{RESET}")
 
     confirm_input = input("Do you want to continue? (y/n): ").lower()
+
     if confirm_input == "y":
         pass
     else:
@@ -124,6 +127,7 @@ try:
                 print("Raw response content:\n", response.text)
                 input("\nPress Enter To Exit...")
                 sys.exit()
+
             if not data:
                 print(f"{YELLOW}No events found. The user or repository might be inactive or private.")
         else:
@@ -162,9 +166,10 @@ try:
         print(f"Remaining Requests: {rate_remaining} requests left")
         print(f"Rate Limit Reset at: {time.ctime(int(rate_reset))}")
 
-
     def data_saving(data, username, *args):
+
         failed_to_save = False
+
         try:
             if input(f"\n{GREEN}Save{RESET} as json? ({RED}will overwrite existing files with the same username!{RESET})\n(y/n): ").strip().lower() == "y":
                 with open(f"{username}-data.json", "w") as f:
@@ -179,7 +184,9 @@ try:
 
         if failed_to_save:
             while True:
+
                 directory = input(f"Enter an {YELLOW}alternative{RESET} directory path or {RED}exit{RESET} out of saving the file by pressing {GREEN}enter{RESET}: ")
+
                 if directory == "":
                     break
                 else:
