@@ -1,4 +1,4 @@
-import time, sys
+import logging, time, sys
 
 RESET, GREEN, BLUE, YELLOW, RED = '\033[0m', '\033[92m', '\033[94m', '\033[93m', '\033[91m'
 TOKEN_DOCS = "https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens"
@@ -34,14 +34,19 @@ class UserInputHandler:
             except ValueError:
                 print(SELECTION_ERROR)
 
+        logging.info(f"Fetch type: {fetch_type}")
+
         print()
         self.username = input(f"Enter the {GREEN}username{RESET} of the person you want to fetch from: ")
+        logging.debug(f"UserName entered: {self.username}")
         self.useragent = input(f"Enter your {GREEN}app name{RESET} or {GREEN}identifier{RESET} (Can be anything): ")
+        logging.debug(f"UserAgent entered: {self.useragent}")
 
         if fetch_type == 1:
             self.endpoint = f'https://api.github.com/users/{self.username}/events'
         elif fetch_type == 2:
             self.repo = input(f"Enter the name of your {GREEN}repository{RESET}: ")
+            logging.debug(f"Repository entered: {self.repo}")
             self.endpoint = f'https://api.github.com/repos/{self.username}/{self.repo}/events'
 
         self._ask_for_token(fetch_type)
@@ -52,6 +57,11 @@ class UserInputHandler:
             print(f"You {YELLOW}may{RESET} need a personal access {TOKEN_PRINT_FORMAT}.")
             print(TOKEN_DOCS_FORMATTED)
             self.token = input(f"\nOptional -> Enter your access {TOKEN_PRINT_FORMAT}: ") or None
+            if self.token is None:
+                logging.info("Did not enter a token")
+            else:
+                logging.DEBUG("Entered a token: %s", "[HIDDEN]")
+                
         elif fetch_type == 2:
             while True:
                 print(f"You {RED}require{RESET} a personal access {TOKEN_PRINT_FORMAT}.")
@@ -61,6 +71,7 @@ class UserInputHandler:
                 if len(self.token) < 5:
                     print(f"\nToken is {RED}too short{RESET}!")
                 else:
+                    logging.DEBUG("Entered a token: %s", "[HIDDEN]")
                     break
 
 
@@ -72,6 +83,9 @@ class UserInputHandler:
         print(f"Your token: {BLUE if self.token is None else GREEN}{'[HIDDEN]' if self.token else 'None'}{RESET}")
 
         if input("Do you want to continue? (y/n): ").strip().lower() != "y":
+            logging.info("Denied input")
             print("Exiting...")
             time.sleep(2)
             sys.exit()
+
+        logging.info("Confirmed input")

@@ -1,7 +1,28 @@
+import logging
 from input_handler import UserInputHandler
 from github_client import GitHubAPIClient
 from data_handler import DataHandler
 import sys
+
+RESET, GREEN, RED = '\033[0m', '\033[92m', '\033[91m'
+
+# LogRecord attributes: https://docs.python.org/3/library/logging.html#logrecord-attributes
+
+def configure_logging():
+    if input(f"Activate {GREEN}logging{RESET} + {GREEN}save{RESET}? (y/n): ").lower() == "y":
+        logging.basicConfig(
+            format='%(levelname)s (%(asctime)s): %(message)s (Line: %(lineno)d [%(filename)s])',
+            datefmt='%d/%m/%Y %I:%M:%S %p',
+            filename='Activity-Fetcher.log',
+            level=logging.DEBUG
+        )
+    else:
+        class NullHandler(logging.Handler):
+            def emit(self, record): pass
+        logging.getLogger().addHandler(NullHandler())
+        logging.getLogger().setLevel(logging.CRITICAL + 1)
+
+configure_logging()
 
 def main():
     try:
@@ -17,9 +38,10 @@ def main():
 
     # If something completely unexpected happens, its gonna get catched!
     except Exception as e:
-        print(f"\n\033[91mUnexpected error:\033[0m")
-        print(f"\033[91m{type(e).__name__}:\033[0m {e}")
-        print("\nPlease report this issue on GitHub 'Akeoottt/GitHub-Activity-Fetcher/issues'")
+        logging.error(f"An exception stopped the program: {e}")
+        print(f"\n{RED}Unexpected error{RESET}:")
+        print(f"{RED}{type(e).__name__}{RESET}: {e}")
+        print("\nPlease report this issue on GitHub 'Akeoots/GitHub-Activity-Fetcher/issues'")
 
     input("\nPress Enter To Exit...")
     sys.exit()
