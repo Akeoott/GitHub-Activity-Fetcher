@@ -6,6 +6,8 @@ import sys
 
 RESET, GREEN, RED = '\033[0m', '\033[92m', '\033[91m'
 
+VERSION = '3.0.0'
+
 # LogRecord attributes: https://docs.python.org/3/library/logging.html#logrecord-attributes
 
 def configure_logging():
@@ -23,6 +25,8 @@ def configure_logging():
         logging.getLogger().setLevel(logging.CRITICAL + 1)
 
 configure_logging()
+
+logging.info(f"Version {VERSION}")
 
 def main():
     try:

@@ -9,6 +9,7 @@ A lightweight Python tool that allows you to fetch and view GitHub user activity
 - Fetches:
   - A user's **general public activity** (`/users/<username>/events`)
   - A user's **repo-specific activity** (`/repos/<username>/<repo>/events`)
+- Allows logging program events
 - Provides **rate limit feedback** after each request
 - Pretty-prints structured event data
 - Allows **JSON saving** of fetched data (with overwrite and fallback directory support)
@@ -19,13 +20,12 @@ A lightweight Python tool that allows you to fetch and view GitHub user activity
 
 ## 📦 Structure Overview
 
-| Function | Purpose |
-|---------|---------|
-| `user_input()` | Interactive CLI that gathers parameters such as username, repo name, user-agent, and token |
-| `api_request()` | Constructs and sends the appropriate GitHub API request |
-| `response_parsing()` | *(Merged with api_request)* Decodes JSON and checks for HTTP issues |
-| `output_formatting()` | Displays the received data in readable form and prints rate limits |
-| `data_saving()` | Optionally saves JSON output to disk, with fallback path support |
+| File | Class | Purpose |
+|---------|---------|---------|
+| `main.py` | Calling Classes | Running the entire program and calling the classes |
+| `input_handler.py` | UserInputHandler | As the name implies it handles user input |
+| `github_client.py` | GitHubAPIClient | Calls the REST API to fetch you data |
+| `data_handler` | DataHandler | Handles all the information from `github_client.py` |
 
 ---
 
@@ -103,7 +103,7 @@ This program is **released as an executable**, but if you’re on Linux or are a
 3. **Run the program directly** from the source code of the archived versions or run the latest update:
    * [Archived versions](https://github.com/Akeoottt/GitHub-Activity-Fetcher/tree/main/archive/source-code)
      * v1.2.1.py
-     * v1.2.0.py
+     * v1.1.0.py
    * [Most recent update](https://github.com/Akeoottt/GitHub-Activity-Fetcher/blob/main/main.py)
      * main.py
    
