@@ -15,10 +15,11 @@ def main():
         handler.display(data, limit, remaining, reset)
         handler.save(data)
 
+    # If something completely unexpected happens, its gonna get catched!
     except Exception as e:
         print(f"\n\033[91mUnexpected error:\033[0m")
         print(f"\033[91m{type(e).__name__}:\033[0m {e}")
-        print("\nPlease report this issue on GitHub 'Akeoots/GitHub-Activity-Fetcher/issues'")
+        print("\nPlease report this issue on GitHub 'Akeoottt/GitHub-Activity-Fetcher/issues'")
 
     input("\nPress Enter To Exit...")
     sys.exit()
