@@ -87,7 +87,7 @@ You’ll also get this info after each request:
 
 ## 🐧 For Linux Users and developers
 
-This program is **released as an executable**, but if you’re on Linux or are a dev and need to run the source code:
+This program is **released as an executable**, but if you’re on Linux or are a dev and need or may want to run the source code:
 
 1. **Ensure Python 3 is installed.** You can verify with:
    ```bash
