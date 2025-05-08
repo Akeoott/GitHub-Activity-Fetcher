@@ -15,7 +15,7 @@ def configure_logging():
         logging.basicConfig(
             format='%(levelname)s (%(asctime)s): %(message)s (Line: %(lineno)d [%(filename)s])',
             datefmt='%d/%m/%Y %I:%M:%S %p',
-            filename='Activity-Fetcher.log',
+            filename='Activity-Fetcher-Log.log',
             level=logging.DEBUG
         )
     else:
@@ -41,13 +41,19 @@ def main():
         handler.save(data)
 
     # If something completely unexpected happens, its gonna get catched!
+    except TypeError as e:
+        logging.error(f"A TypeError stopped the program: {type(e).__name__} {e}")
+        print(f"\n{RED}Unexpected error{RESET}")
+        print(f"{RED}{type(e).__name__}{RESET}: {e}")
+        print("\nPlease report this issue on GitHub 'Akeoots/GitHub-Activity-Fetcher/issues'")
     except Exception as e:
-        logging.error(f"An exception stopped the program: {e}")
-        print(f"\n{RED}Unexpected error{RESET}:")
+        logging.error(f"An exception stopped the program: {type(e).__name__} {e}")
+        print(f"\n{RED}Unexpected error{RESET}")
         print(f"{RED}{type(e).__name__}{RESET}: {e}")
         print("\nPlease report this issue on GitHub 'Akeoots/GitHub-Activity-Fetcher/issues'")
 
     input("\nPress Enter To Exit...")
+    logging.info("Exiting...")
     sys.exit()
 
 if __name__ == "__main__":

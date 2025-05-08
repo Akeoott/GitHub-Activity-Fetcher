@@ -24,7 +24,7 @@ class UserInputHandler:
         fetch_type = None
         while fetch_type not in {1, 2}:
             try:
-                print("Select what you want to fetch:")
+                print("\nSelect what you want to fetch:")
                 print(f"List {GREEN}user{RESET} events (1)")
                 print(f"List {GREEN}repo{RESET} specific user events (2)")
                 fetch_type = int(input("\nEnter here: "))
@@ -60,8 +60,8 @@ class UserInputHandler:
             if self.token is None:
                 logging.info("Did not enter a token")
             else:
-                logging.DEBUG("Entered a token: %s", "[HIDDEN]")
-                
+                logging.debug("Entered a token: %s", "[HIDDEN]")
+
         elif fetch_type == 2:
             while True:
                 print(f"You {RED}require{RESET} a personal access {TOKEN_PRINT_FORMAT}.")
@@ -71,7 +71,7 @@ class UserInputHandler:
                 if len(self.token) < 5:
                     print(f"\nToken is {RED}too short{RESET}!")
                 else:
-                    logging.DEBUG("Entered a token: %s", "[HIDDEN]")
+                    logging.debug("Entered a token: %s", "[HIDDEN]")
                     break
 
 
