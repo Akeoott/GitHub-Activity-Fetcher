@@ -1,8 +1,7 @@
-import logging
+import logging, sys
 from input_handler import UserInputHandler
 from github_client import GitHubAPIClient
 from data_handler import DataHandler
-import sys
 
 RESET, GREEN, RED = '\033[0m', '\033[92m', '\033[91m'
 
