@@ -1,16 +1,16 @@
 import logging, sys
-from input_handler import UserInputHandler
-from github_client import GitHubAPIClient
-from data_handler import DataHandler
-
-RESET, GREEN, RED = '\033[0m', '\033[92m', '\033[91m'
-
-VERSION = '3.0.0'
+from tkinter import messagebox as msgbox
 
 # LogRecord attributes: https://docs.python.org/3/library/logging.html#logrecord-attributes
 
+RESET, GREEN, RED = '\033[0m', '\033[92m', '\033[91m'
+
 def configure_logging():
-    if input(f"Activate {GREEN}logging{RESET} + {GREEN}save{RESET}? (y/n): ").lower() == "y":
+    # Prevent duplicate log handlers and repeated configuration
+    root_logger = logging.getLogger()
+    if root_logger.hasHandlers():
+        return
+    if msgbox.askyesno(title="GitHub Activity Fetcher", message=f"Activate logging + save log?", icon="info"):
         logging.basicConfig(
             format='%(levelname)s (%(asctime)s): %(message)s (Line: %(lineno)d [%(filename)s])',
             datefmt='%d/%m/%Y %I:%M:%S %p',
@@ -20,25 +20,31 @@ def configure_logging():
     else:
         class NullHandler(logging.Handler):
             def emit(self, record): pass
-        logging.getLogger().addHandler(NullHandler())
-        logging.getLogger().setLevel(logging.CRITICAL + 1)
+        root_logger.addHandler(NullHandler())
+        root_logger.setLevel(logging.CRITICAL + 1)
 
 configure_logging()
 
+VERSION = '4.0.0-ALPHA'
+
 logging.info(f"Version {VERSION}")
+
+from input_gui import InputInterface
+from github_client import GitHubAPIClient
+from data_handler import DataHandler
 
 def main():
     try:
-        input_handler = UserInputHandler()
-        endpoint, username, useragent, token = input_handler.prompt()
+        input_handler = InputInterface()
+        endpoint, username, useragent, token, repo = input_handler.prompt()
 
-        client = GitHubAPIClient(endpoint, username, useragent, token)
+        client = GitHubAPIClient(endpoint, username, useragent, token, repo)
         data, (limit, remaining, reset) = client.fetch_events()
 
         handler = DataHandler(username, token)
         handler.display(data, limit, remaining, reset)
         handler.save(data)
-
+    
     # If something completely unexpected happens, its gonna get catched!
     except TypeError as e:
         logging.error(f"A TypeError stopped the program: {type(e).__name__} {e}")
