@@ -25,7 +25,7 @@ def configure_logging():
 
 configure_logging()
 
-VERSION = '4.0.0-alpha.1'
+VERSION = '4.0.0-alpha'
 
 logging.info(f"Version {VERSION}")
 
