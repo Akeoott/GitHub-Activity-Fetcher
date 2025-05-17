@@ -18,7 +18,7 @@ class UserInputHandler:
         self._select_mode()
         self._confirm()
 
-        return self.endpoint, self.username, self.useragent, self.token
+        return self.endpoint, self.username, self.useragent, self.repo, self.token
 
     def _select_mode(self):
         fetch_type = None

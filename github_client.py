@@ -12,10 +12,11 @@ STATUS_MESSAGES = {
 }
 
 class GitHubAPIClient:
-    def __init__(self, endpoint, username, useragent, token):
+    def __init__(self, endpoint, username, useragent, repo, token):
         self.endpoint = endpoint
         self.username = username
         self.useragent = useragent
+        self.repo = repo
         self.token = token
         self.headers = self._build_headers()
 

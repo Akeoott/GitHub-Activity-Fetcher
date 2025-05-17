@@ -5,7 +5,7 @@ from data_handler import DataHandler
 
 RESET, GREEN, RED = '\033[0m', '\033[92m', '\033[91m'
 
-VERSION = '3.0.0'
+VERSION = '3.0.1'
 
 # LogRecord attributes: https://docs.python.org/3/library/logging.html#logrecord-attributes
 
@@ -30,9 +30,9 @@ logging.info(f"Version {VERSION}")
 def main():
     try:
         input_handler = UserInputHandler()
-        endpoint, username, useragent, token = input_handler.prompt()
+        endpoint, username, useragent, repo, token = input_handler.prompt()
 
-        client = GitHubAPIClient(endpoint, username, useragent, token)
+        client = GitHubAPIClient(endpoint, username, useragent, repo, token)
         data, (limit, remaining, reset) = client.fetch_events()
 
         handler = DataHandler(username, token)
