@@ -11,6 +11,9 @@ class DataHandler:
         print(f"\n{GREEN}User Events:{RESET}")
         pprint.pprint(data)
 
+        if data == "[]":
+            print("It appears as there is no information present\nThis may be due to the user having a private profile or it not existing.")
+
         if self.token is None:
             print("\nSome information may not be present as you have not entered an access token!")
 
