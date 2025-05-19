@@ -4,22 +4,26 @@ from tkinter import messagebox as msgbox
 # LogRecord attributes: https://docs.python.org/3/library/logging.html#logrecord-attributes
 
 def configure_logging():
-    # Prevent duplicate log handlers and repeated configuration
     root_logger = logging.getLogger()
     if root_logger.hasHandlers():
         return
-    if msgbox.askyesno(title="GitHub Activity Fetcher", message=f"Activate logging + save log?", icon="info"):
+    
+    logging_req = msgbox.askyesnocancel(title="GitHub Activity Fetcher", message=f"Activate logging + save log?", icon="info")
+
+    if logging_req is True:
         logging.basicConfig(
             format='%(levelname)s (%(asctime)s): %(message)s (Line: %(lineno)d [%(filename)s])',
             datefmt='%d/%m/%Y %I:%M:%S %p',
             filename='Activity-Fetcher-Log.log',
             level=logging.DEBUG
         )
-    else:
+    elif logging_req is False:
         class NullHandler(logging.Handler):
             def emit(self, record): pass
         root_logger.addHandler(NullHandler())
         root_logger.setLevel(logging.CRITICAL + 1)
+    else:
+        sys.exit()
 
 configure_logging()
 
