@@ -1,39 +1,53 @@
 import logging, os, ctypes
 import customtkinter as ctk
+from tkinter import messagebox
 
 def _load_font(font_path):
-    FR_PRIVATE  = 0x10
-    FR_NOT_ENUM = 0x20
+    """
+     Loads a font from the given path for use in the application.
+     Uses Windows GDI functions.
+     Args:
+        font_path: The absolute or relative path to the .ttf font file.
+     Returns:
+        Number of fonts loaded (0 if failed, >0 if successful).
+    """
+    FR_PRIVATE = 0x10
     path = os.path.abspath(font_path)
-    return ctypes.windll.gdi32.AddFontResourceExW(path, FR_PRIVATE, 0)
+    try:
+        result = ctypes.windll.gdi32.AddFontResourceExW(path, FR_PRIVATE, 0)
+        if result == 0:
+            logging.warning(f"Failed to load font: {font_path}. AddFontResourceExW returned 0.")
+        else:
+            logging.info(f"Successfully loaded font: {font_path}")
+        return result
+    except FileNotFoundError:
+        logging.error(f"Font file not found: {font_path}")
+    except Exception as e:
+        logging.error(f"Error loading font {font_path}: {e}")
+    return 0
 
-# Usage
 _load_font("assets/Roboto-VariableFont_wdth,wght.ttf")
 
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("dark-blue")
 
-
-# Fuck tkinter
+# Shit tkinter is complicated
 class InputInterface(ctk.CTk):
-    # Persisted class variables
-    fetch_type = 0
-    username = ""
-    useragent = ""
-    token = ""
-    repo = ""
-    endpoint = ""
-
+    """
+    A CustomTkinter GUI for obtaining user inputs for fetching GitHub activity.
+    Allows users to choose between fetching general user events or repository-specific user events.
+    """
     def __init__(self):
-        # Use class variables to persist data
-        self.fetch_type = InputInterface.fetch_type
-        self.username = InputInterface.username
-        self.useragent = InputInterface.useragent
-        self.token = InputInterface.token
-        self.repo = InputInterface.repo
-        self.endpoint = InputInterface.endpoint
-
+        """Initializes the main application window and its components."""
         super().__init__()
+        # Instance variables to store the results
+        self.fetch_type_val = 0
+        self.username_val = ""
+        self.useragent_val = ""
+        self.token_val = ""
+        self.repo_val = ""
+        self.endpoint_val = ""
+        self.data_ready = False # Flag to indicate if data is ready
 
         self.roboto_font = ("Roboto", 14)
         self.roboto_title = ("Roboto", 18, "bold")
@@ -119,66 +133,94 @@ class InputInterface(ctk.CTk):
         logging.debug(f"Fetch type: {self.fetch_type}")
         self._show_page(self.page3)
 
+    def _validate_and_store_user_events(self):
+        username = self.username_user_entry.get().strip()
+        useragent = self.useragent_user_entry.get().strip()
+        token = self.token_user_entry.get().strip()
+
+        if not username or not useragent:
+            self.user_error_label.configure(text="Username and Useragent are required.")
+            return False
+
+        self.username_val = username
+        self.useragent_val = useragent
+        self.token_val = token
+        self.fetch_type_val = 1
+        self.repo_val = "" # Ensure repo is cleared for user events
+        self.user_error_label.configure(text="") # Clear error
+        return True
+
     def _fetch_user_events(self):
-        self.username = self.username_user_entry.get().strip()
-        self.useragent = self.useragent_user_entry.get().strip()
-        self.token = self.token_user_entry.get().strip()
+        if self._validate_and_store_user_events():
+            self.data_ready = True
+            self.destroy() # Close the window, mainloop will exit
 
-        # Persist values to class variables
-        InputInterface.fetch_type = self.fetch_type
-        InputInterface.username = self.username
-        InputInterface.useragent = self.useragent
-        InputInterface.token = self.token
-        InputInterface.repo = self.repo
+    def _validate_and_store_repo_events(self):
+        username = self.username_repo_entry.get().strip()
+        useragent = self.useragent_repo_entry.get().strip()
+        token = self.token_repo_entry.get().strip()
+        repo = self.repo_repo_entry.get().strip()
 
-        if not self.username or not self.useragent:
-            self.user_error_label.configure(text="Username and Header are required.")
-            return
-        self.quit()
-        self.prompt()
+        if not username or not useragent or not token or not repo:
+            self.repo_error_label.configure(text="All fields are required for repo events.")
+            return False
+
+        self.username_val = username
+        self.useragent_val = useragent
+        self.token_val = token
+        self.repo_val = repo
+        self.fetch_type_val = 2
+        self.repo_error_label.configure(text="") # Clear error
+        return True
 
     def _fetch_repo_events(self):
-        self.username = self.username_repo_entry.get().strip()
-        self.useragent = self.useragent_repo_entry.get().strip()
-        self.token = self.token_repo_entry.get().strip()
-        self.repo = self.repo_repo_entry.get().strip()
+        if self._validate_and_store_repo_events():
+            self.data_ready = True
+            self.destroy() # Close the window, mainloop will exit
 
-        # Persist values to class variables
-        InputInterface.fetch_type = self.fetch_type
-        InputInterface.username = self.username
-        InputInterface.useragent = self.useragent
-        InputInterface.token = self.token
-        InputInterface.repo = self.repo
+    def get_inputs(self):
+        """
+        Displays the GUI and waits for user input.
+        Returns the collected inputs after the user submits the form or closes the window.
+        Returns:
+            A tuple containing: (endpoint, username, useragent, token, repo).
+            Endpoint can be None if inputs are not successfully gathered.
+        """
+        self.mainloop() # Start the GUI interaction
 
-        if not self.username or not self.useragent or not self.token or not self.repo:
-            self.repo_error_label.configure(text="Its required to fill out every field.")
-            return
-        self.quit()
-        self.prompt()
+        # This part executes after self.destroy() is called
+        if not self.data_ready: # If window was closed without pressing Fetch
+            logging.info("GUI closed without providing input.")
+            return None, None, None, None, None
 
-    def prompt(self):
-        logging.debug(f"Fetch type: {self.fetch_type}")
         endpoint = None
-        if self.fetch_type == 1:
-            endpoint = f'https://api.github.com/users/{self.username}/events'
-        elif self.fetch_type == 2:
-            endpoint = f'https://api.github.com/repos/{self.username}/{self.repo}/events'
-        elif self.fetch_type == 0:
-            logging.warning("Passed endpoint due to fetch type being 0")
-            self.destroy
-        
-        self.endpoint = endpoint
+        if self.fetch_type_val == 1:
+            endpoint = f'https://api.github.com/users/{self.username_val}/events'
+        elif self.fetch_type_val == 2:
+            endpoint = f'https://api.github.com/repos/{self.username_val}/{self.repo_val}/events'
 
         logging.debug(
-            f"Returning to main:\n"
-            f"endpoint: {self.endpoint}\n"
-            f"username: {self.username}\n"
-            f"useragent: {self.useragent}\n"
-            f"token: {'[Hidden Token]' if self.token else '[No token]'}\n"
-            f"repo: {self.repo if self.repo else '[No repo]'}"
+            f"Returning from GUI:\n"
+            f"endpoint: {endpoint}\n"
+            f"username: {self.username_val}\n"
+            f"useragent: {self.useragent_val}\n"
+            f"token: {'[Hidden Token]' if self.token_val else '[No token]'}\n"
+            f"repo: {self.repo_val if self.repo_val else '[No repo]'}"
         )
+        return endpoint, self.username_val, self.useragent_val, self.token_val, self.repo_val
 
-        return self.endpoint, self.username, self.useragent, self.token, self.repo
-    
-app = InputInterface()
-app.mainloop()
+# For testing standalone
+if False:
+    if __name__ == "__main__":
+        logging.basicConfig(level=logging.DEBUG) # Add basic logging for standalone test
+        gui = InputInterface()
+        endpoint, username, useragent, token, repo = gui.get_inputs() # Using the refactored approach
+        if endpoint:
+            print("Data obtained from GUI:")
+            print(f"  Endpoint: {endpoint}")
+            print(f"  Username: {username}")
+            print(f"  Useragent: {useragent}")
+            print(f"  Token: {'Present' if token else 'Not Present'}")
+            print(f"  Repository: {repo if repo else 'N/A'}")
+        else:
+            print("GUI was closed without submitting data.")

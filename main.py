@@ -3,8 +3,6 @@ from tkinter import messagebox as msgbox
 
 # LogRecord attributes: https://docs.python.org/3/library/logging.html#logrecord-attributes
 
-RESET, GREEN, RED = '\033[0m', '\033[92m', '\033[91m'
-
 def configure_logging():
     # Prevent duplicate log handlers and repeated configuration
     root_logger = logging.getLogger()
@@ -25,18 +23,36 @@ def configure_logging():
 
 configure_logging()
 
-VERSION = '4.0.0-alpha'
+RESET, GREEN, RED = '\033[0m', '\033[92m', '\033[91m'
+
+VERSION = '4.0.0-alpha.1'
 
 logging.info(f"Version {VERSION}")
+
+# Exception message
+def report_unexpected_error(e: Exception):
+    print(f"\n{RED}Unexpected error{RESET}")
+    print(f"{RED}{type(e).__name__}{RESET}: {e}")
+    print("\nPlease report this issue on GitHub 'Akeoots/GitHub-Activity-Fetcher/issues'")
 
 from input_gui import InputInterface
 from github_client import GitHubAPIClient
 from data_handler import DataHandler
 
+"""
+Main function resides here.
+This is where all other files get called to make out the entire program.
+"""
+
 def main():
     try:
         input_handler = InputInterface()
-        endpoint, username, useragent, token, repo = input_handler.prompt()
+        # Call the method that runs the GUI and returns inputs
+        endpoint, username, useragent, token, repo = input_handler.get_inputs()
+
+        if not endpoint: # Or check any other essential value like username
+            logging.warning("No input provided from the GUI. Exiting.")
+            sys.exit()
 
         client = GitHubAPIClient(endpoint, username, useragent, token, repo)
         data, (limit, remaining, reset) = client.fetch_events()
@@ -48,14 +64,10 @@ def main():
     # If something completely unexpected happens, its gonna get catched!
     except TypeError as e:
         logging.error(f"A TypeError stopped the program: {type(e).__name__} {e}")
-        print(f"\n{RED}Unexpected error{RESET}")
-        print(f"{RED}{type(e).__name__}{RESET}: {e}")
-        print("\nPlease report this issue on GitHub 'Akeoots/GitHub-Activity-Fetcher/issues'")
+        report_unexpected_error(e)
     except Exception as e:
         logging.error(f"An exception stopped the program: {type(e).__name__} {e}")
-        print(f"\n{RED}Unexpected error{RESET}")
-        print(f"{RED}{type(e).__name__}{RESET}: {e}")
-        print("\nPlease report this issue on GitHub 'Akeoots/GitHub-Activity-Fetcher/issues'")
+        report_unexpected_error(e)
 
     input("\nPress Enter To Exit...")
     logging.info("Exiting...")
