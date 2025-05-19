@@ -1,7 +1,8 @@
+from constants import MSGBOX_ERROR_OPEN_ISSUE_INFO, MSGBOX_ERROR_TITLE
 import logging, requests, sys, json
+from tkinter import messagebox as msgbox
 
 RESTAPI_DOCS = "https://docs.github.com/rest/using-the-rest-api/troubleshooting-the-rest-api?apiVersion=2022-11-28"
-RESET, GREEN, YELLOW, RED = '\033[0m', '\033[92m', '\033[93m', '\033[91m'
 
 STATUS_MESSAGES = {
     404: "Not Found",
@@ -51,9 +52,7 @@ class GitHubAPIClient:
             data = response.json()
         except json.JSONDecodeError as e:
             logging.error(f"Failed to Decode JSON: {e}")
-            print(f"\n{RED}Failed to parse JSON. GitHub may have returned HTML instead.")
-            print("Raw response content:\n", response.text)
-            input("\nPress Enter To Exit...")
+            msgbox.showerror(title=MSGBOX_ERROR_TITLE, message=f"Failed to Decode JSON:\n{e}{MSGBOX_ERROR_OPEN_ISSUE_INFO}")
             sys.exit()
 
         logging.info("Successfully fetched data")
@@ -70,7 +69,5 @@ class GitHubAPIClient:
     def _handle_error(self, response):
         message = STATUS_MESSAGES.get(response.status_code, "")
         logging.error(f"API Status code: {response} {message}")
-        print(f"\n{YELLOW}Code{RESET}: {response} {message}")
-        print(f"More information under: {RESTAPI_DOCS}")
-        input("\nPress Enter To Exit...")
+        msgbox.showerror(title=MSGBOX_ERROR_TITLE, message=f"API Status code: {response} {message}\nMore information under: {RESTAPI_DOCS}{MSGBOX_ERROR_OPEN_ISSUE_INFO}")
         sys.exit()

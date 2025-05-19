@@ -1,5 +1,6 @@
 import logging, sys
 from tkinter import messagebox as msgbox
+from constants import VERSION, MSGBOX_ERROR_TITLE, MSGBOX_ERROR_OPEN_ISSUE_INFO
 
 # LogRecord attributes: https://docs.python.org/3/library/logging.html#logrecord-attributes
 
@@ -27,21 +28,15 @@ def configure_logging():
 
 configure_logging()
 
-RESET, GREEN, RED = '\033[0m', '\033[92m', '\033[91m'
-
-VERSION = '4.0.0-alpha.1'
-
 logging.info(f"Version {VERSION}")
 
-# Exception message
-def report_unexpected_error(e: Exception):
-    print(f"\n{RED}Unexpected error{RESET}")
-    print(f"{RED}{type(e).__name__}{RESET}: {e}")
-    print("\nPlease report this issue on GitHub 'Akeoots/GitHub-Activity-Fetcher/issues'")
-
-from input_gui import InputInterface
-from github_client import GitHubAPIClient
-from data_handler import DataHandler
+try:
+    from input_gui import InputInterface
+    from github_client import GitHubAPIClient
+    from data_handler import DataHandler
+except ImportError as e:
+    logging.error(f"ImportError: {e}")
+    sys.exit("Required modules could not be imported. Exiting.")
 
 """
 Main function resides here.
@@ -68,12 +63,11 @@ def main():
     # If something completely unexpected happens, its gonna get catched!
     except TypeError as e:
         logging.error(f"A TypeError stopped the program: {type(e).__name__} {e}")
-        report_unexpected_error(e)
+        msgbox.showerror(title=MSGBOX_ERROR_TITLE, message=f"Unexpected error\n{type(e).__name__}:\n{e}{MSGBOX_ERROR_OPEN_ISSUE_INFO}")
     except Exception as e:
         logging.error(f"An exception stopped the program: {type(e).__name__} {e}")
-        report_unexpected_error(e)
+        msgbox.showerror(title=MSGBOX_ERROR_TITLE, message=f"Unexpected error\n{type(e).__name__}:\n{e}{MSGBOX_ERROR_OPEN_ISSUE_INFO}")
 
-    input("\nPress Enter To Exit...")
     logging.info("Exiting...")
     sys.exit()
 
