@@ -17,14 +17,13 @@ def _load_font(font_path):
     try:
         result = ctypes.windll.gdi32.AddFontResourceExW(path, FR_PRIVATE, 0)
         if result == 0:
-
             logging.warning(f"Failed to load font: {font_path}. AddFontResourceExW returned 0.")
             msgbox.showwarning(title=MSGBOX_WARNING_TITLE, message=f"Failed to load font: {font_path}\n\nPlease retry or reinstall this program{MSGBOX_ERROR_OPEN_ISSUE_INFO}\n\nTHIS PROGRAM WILL ATTEMPT TO CONTINUE!")
-        else:
 
+        else:
             logging.info(f"Successfully loaded font: {font_path}")
         return result
-    
+
     except FileNotFoundError:
         logging.error(f"Font file not found: {font_path}")
         msgbox.showerror(title=MSGBOX_ERROR_TITLE, message=f"Font file not found: {font_path}\n\nI recommend reinstalling the program.{MSGBOX_ERROR_OPEN_ISSUE_INFO}")
