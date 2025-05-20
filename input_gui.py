@@ -1,4 +1,4 @@
-from constants import MSGBOX_ERROR_OPEN_ISSUE_INFO, MSGBOX_ERROR_TITLE
+from constants import MSGBOX_ERROR_OPEN_ISSUE_INFO, MSGBOX_WARNING_TITLE, MSGBOX_ERROR_TITLE
 import logging, os, ctypes
 import customtkinter as ctk
 from tkinter import messagebox as msgbox
@@ -19,7 +19,7 @@ def _load_font(font_path):
         if result == 0:
 
             logging.warning(f"Failed to load font: {font_path}. AddFontResourceExW returned 0.")
-            msgbox.showwarning(title=MSGBOX_ERROR_TITLE, message=f"Failed to load font: {font_path}\n\nPlease retry or reinstall this program{MSGBOX_ERROR_OPEN_ISSUE_INFO}\n\nTHIS PROGRAM WILL ATTEMPT TO CONTINUE!")
+            msgbox.showwarning(title=MSGBOX_WARNING_TITLE, message=f"Failed to load font: {font_path}\n\nPlease retry or reinstall this program{MSGBOX_ERROR_OPEN_ISSUE_INFO}\n\nTHIS PROGRAM WILL ATTEMPT TO CONTINUE!")
         else:
 
             logging.info(f"Successfully loaded font: {font_path}")
