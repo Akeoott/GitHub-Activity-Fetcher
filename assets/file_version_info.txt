@@ -1,0 +1,35 @@
+# version.txt
+# UTF-8 encoding
+
+VSVersionInfo(
+  ffi=FixedFileInfo(
+    filevers=(4, 0, 0, 0),
+    prodvers=(4, 0, 0, 0),
+    mask=0x3f,
+    flags=0x0,
+    OS=0x40004,
+    fileType=0x1,
+    subtype=0x0,
+    date=(0, 0)
+  ),
+  kids=[
+    StringFileInfo(
+      [
+        StringTable(
+          '040904B0',
+          [
+            StringStruct('CompanyName', 'Akeoottt'),
+            StringStruct('FileDescription', 'GitHub Activity Fetcher'),
+            StringStruct('FileVersion', '4.0.0-alpha.1'),
+            StringStruct('InternalName', 'GitHub Activity Fetcher'),
+            StringStruct('LegalCopyright', '© Akeoott 2025'),
+            StringStruct('OriginalFilename', 'main.exe'),
+            StringStruct('ProductName', 'GitHub Activity Fetcher'),
+            StringStruct('ProductVersion', '4.0.0-alpha.1')
+          ]
+        )
+      ]
+    ),
+    VarFileInfo([VarStruct('Translation', [1033, 1200])])
+  ]
+)
