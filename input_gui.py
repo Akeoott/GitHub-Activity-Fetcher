@@ -19,7 +19,7 @@ def _load_font(font_path):
         if result == 0:
 
             logging.warning(f"Failed to load font: {font_path}. AddFontResourceExW returned 0.")
-            msgbox.showwarning(title=MSGBOX_ERROR_TITLE, message=f"Failed to load font: {font_path}\n\nPlease retry or reinstall this program{MSGBOX_ERROR_OPEN_ISSUE_INFO}")
+            msgbox.showwarning(title=MSGBOX_ERROR_TITLE, message=f"Failed to load font: {font_path}\n\nPlease retry or reinstall this program{MSGBOX_ERROR_OPEN_ISSUE_INFO}\n\nTHIS PROGRAM WILL ATTEMPT TO CONTINUE!")
         else:
 
             logging.info(f"Successfully loaded font: {font_path}")
