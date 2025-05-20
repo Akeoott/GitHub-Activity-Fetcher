@@ -11,6 +11,7 @@ Library info:
             logging
             requests
         visual:
+            PyQt5
             pprint
             ctypes
             tkinter
