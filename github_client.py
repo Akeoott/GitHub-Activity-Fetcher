@@ -1,16 +1,11 @@
-from constants import MSGBOX_ERROR_OPEN_ISSUE_INFO, MSGBOX_ERROR_TITLE
-import logging, requests, sys, json
+import logging, requests, os, json
+from constants import STATUS_MESSAGES, RESTAPI_DOCS
+import msg_handler # error handeler
+from custom_exception import APIError
 from tkinter import messagebox as msgbox
 
-RESTAPI_DOCS = "https://docs.github.com/rest/using-the-rest-api/troubleshooting-the-rest-api?apiVersion=2022-11-28"
-
-STATUS_MESSAGES = {
-    404: "Not Found",
-    403: "Forbidden",
-    429: "Too Many Requests",
-    400: "Bad Request",
-    401: "Unauthorized (token invalid)"
-}
+full_path = __file__
+file_name = os.path.basename(full_path)
 
 class GitHubAPIClient:
     def __init__(self, endpoint, username, useragent, token, repo):
@@ -32,42 +27,52 @@ class GitHubAPIClient:
 
     def _build_headers(self):
         headers = {
-            'User-Agent': self.useragent,
-            'Accept': 'application/vnd.github.v3+json',
-            'X-GitHub-Api-Version': '2022-11-28'
+            "Accept": "application/vnd.github.v3+json",
+            "User-Agent": self.useragent
         }
         if self.token:
-            headers['Authorization'] = f'token {self.token}'
+            headers["Authorization"] = f"token {self.token}"
         return headers
 
     def fetch_events(self):
         response = requests.get(self.endpoint, headers=self.headers)
 
         if response.status_code != 200:
-            self._handle_error(response)
+            try:
+                raise APIError(response.status_code, "Unexpected status code from API")
+            except APIError as e:
+                message = STATUS_MESSAGES.get(response.status_code, "")
+                logging.debug(f"API Status code: {response.status_code} {message}")
+                e_type: str = "error"
+                context: str = (
+                    f"A {type(e).__name__} unexpectedly occurred.<br>"
+                    f"API Status code: {response.status_code} {message}<br>"
+                    f"More information under:<br>{RESTAPI_DOCS}"
+                )
+                msg_handler.error_handeling(e, e_type, context, file_name)
+
         logging.debug("API Status code: 200")
 
-
+        data = None
         try:
             data = response.json()
         except json.JSONDecodeError as e:
-            logging.error(f"Failed to Decode JSON: {e}")
-            msgbox.showerror(title=MSGBOX_ERROR_TITLE, message=f"Failed to Decode JSON:\n{e}{MSGBOX_ERROR_OPEN_ISSUE_INFO}")
-            sys.exit()
+            e_type: str = "error"
+            context: str = (
+                f"A {type(e).__name__} unexpectedly occurred.<br>"
+                f"Failed to Decode JSON."
+            )
+            msg_handler.error_handeling(e, e_type, context, file_name)
+            data = {}  # or set to None, depending on how you want to handle this case
 
         logging.info("Successfully fetched data")
-        return data, self._get_rate_limit_info()
 
-    def _get_rate_limit_info(self):
-        r = requests.get(self.endpoint, headers=self.headers).headers
-        return (
-            r.get("X-RateLimit-Limit", "?"),
-            r.get("X-RateLimit-Remaining", "?"),
-            r.get("X-RateLimit-Reset", "?")
+        # Extract rate limit headers from the same response
+        headers = response.headers
+        rate_limit_info = (
+            headers.get("X-RateLimit-Limit", "?"),
+            headers.get("X-RateLimit-Remaining", "?"),
+            headers.get("X-RateLimit-Reset", "?")
         )
 
-    def _handle_error(self, response):
-        message = STATUS_MESSAGES.get(response.status_code, "")
-        logging.error(f"API Status code: {response} {message}")
-        msgbox.showerror(title=MSGBOX_ERROR_TITLE, message=f"API Status code: {response} {message}\nMore information under: {RESTAPI_DOCS}{MSGBOX_ERROR_OPEN_ISSUE_INFO}")
-        sys.exit()
+        return data, rate_limit_info

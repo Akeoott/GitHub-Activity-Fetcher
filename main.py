@@ -1,6 +1,40 @@
-import logging, sys
+import logging, sys, os
+from constants import VERSION, ERROR_TITLE, ISSUE_INFO
+import msg_handler # error handeler
 from tkinter import messagebox as msgbox
-from constants import VERSION, MSGBOX_ERROR_TITLE, MSGBOX_ERROR_OPEN_ISSUE_INFO
+
+full_path = __file__
+file_name = os.path.basename(full_path)
+
+"""
+_______________________
+How this program works:
+
+1.
+main calls input_gui
+input_gui returns to main
+
+2.
+main calls github_client
+github_client returns to main
+
+3.
+main calls data_handler
+data_handler finishes operation
+
+______________
+In exceptions:
+
+Any file calls msg_handler
+msg_handler manages error and decides if continue or not
+
+custom_exception contains one custom exception
+
+__________
+Constants:
+
+constants contains all constants
+"""
 
 # LogRecord attributes: https://docs.python.org/3/library/logging.html#logrecord-attributes
 
@@ -36,7 +70,8 @@ try:
     from data_handler import DataHandler
 except ImportError as e:
     logging.error(f"ImportError: {e}")
-    sys.exit("Required modules could not be imported. Exiting.")
+    msgbox.showerror(title=ERROR_TITLE, message=f"Required modules could not be imported. Exiting.\n\n{ISSUE_INFO}")
+    sys.exit()
 
 """
 Main function resides here.
@@ -62,11 +97,13 @@ def main():
     
     # If something completely unexpected happens, its gonna get catched!
     except TypeError as e:
-        logging.error(f"A TypeError stopped the program: {type(e).__name__} {e}")
-        msgbox.showerror(title=MSGBOX_ERROR_TITLE, message=f"Unexpected error\n{type(e).__name__}:\n{e}{MSGBOX_ERROR_OPEN_ISSUE_INFO}")
+        e_type: str = "error"
+        context: str = "A TypeError occured within the code."
+        msg_handler.error_handeling(e, e_type, context, file_name)
     except Exception as e:
-        logging.error(f"An exception stopped the program: {type(e).__name__} {e}")
-        msgbox.showerror(title=MSGBOX_ERROR_TITLE, message=f"Unexpected error\n{type(e).__name__}:\n{e}{MSGBOX_ERROR_OPEN_ISSUE_INFO}")
+        e_type: str = "error"
+        context: str = f"A {type(e).__name__} unexpectedly ocurred."
+        msg_handler.error_handeling(e, e_type, context, file_name)
 
     logging.info("Exiting...")
     sys.exit()

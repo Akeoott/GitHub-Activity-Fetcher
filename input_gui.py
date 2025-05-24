@@ -1,7 +1,11 @@
-from constants import MSGBOX_ERROR_OPEN_ISSUE_INFO, MSGBOX_WARNING_TITLE, MSGBOX_ERROR_TITLE
 import logging, os, ctypes
+from constants import ISSUE_INFO, WARNING_TITLE, ERROR_TITLE
+import msg_handler # error handeler
 import customtkinter as ctk
 from tkinter import messagebox as msgbox
+
+full_path = __file__
+file_name = os.path.basename(full_path)
 
 def _load_font(font_path):
     """
@@ -18,20 +22,23 @@ def _load_font(font_path):
         result = ctypes.windll.gdi32.AddFontResourceExW(path, FR_PRIVATE, 0)
         if result == 0:
             logging.warning(f"Failed to load font: {font_path}. AddFontResourceExW returned 0.")
-            msgbox.showwarning(title=MSGBOX_WARNING_TITLE, message=f"Failed to load font: {font_path}\n\nPlease retry or reinstall this program{MSGBOX_ERROR_OPEN_ISSUE_INFO}\n\nTHIS PROGRAM WILL ATTEMPT TO CONTINUE!")
+            msgbox.showwarning(title=WARNING_TITLE, message=f"Failed to load font: {font_path}\n\nPlease retry or reinstall this program{ISSUE_INFO}\n\nTHIS PROGRAM WILL ATTEMPT TO CONTINUE!")
 
         else:
             logging.info(f"Successfully loaded font: {font_path}")
         return result
 
-    except FileNotFoundError:
-        logging.error(f"Font file not found: {font_path}")
-        msgbox.showerror(title=MSGBOX_ERROR_TITLE, message=f"Font file not found: {font_path}\n\nI recommend reinstalling the program.{MSGBOX_ERROR_OPEN_ISSUE_INFO}")
+    except FileNotFoundError as e:
+        logging.warning(f"Font file not found: {font_path}")
+        e_type: str = "warning"
+        context: str = f"A {type(e).__name__} unexpectedly ocurred.<br>Font file not found: {font_path}<br>Reinstalling the program is recommended."
+        msg_handler.error_handeling(e, e_type, context, file_name)
 
     except Exception as e:
-        logging.error(f"Error loading font {font_path}: {e}")
-        msgbox.showerror(title=MSGBOX_ERROR_TITLE, message=f"Error loading font {font_path}:\n{e}{MSGBOX_ERROR_OPEN_ISSUE_INFO}")
-
+        logging.warning(f"Error loading font: {font_path}")
+        e_type: str = "warning"
+        context: str = f"A {type(e).__name__} unexpectedly ocurred.<br>Error loading font {font_path}"
+        msg_handler.error_handeling(e, e_type, context, file_name)
     return 0
 
 _load_font("assets/Roboto-VariableFont_wdth,wght.ttf")
