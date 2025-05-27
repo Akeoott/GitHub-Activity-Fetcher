@@ -57,7 +57,7 @@ def load_application_font(font_path="assets/Roboto-VariableFont_wdth,wght.ttf"):
                     return True
             except Exception as e:
                 logging.error(f"Error loading font on Windows: {e}")
-                e_type = "error"
+                e_type = "warning"
                 context = f"Error occurred while loading font {font_path} on Windows."
                 msg_handler.error_handeling(e, e_type, context, file_name)
                 return False

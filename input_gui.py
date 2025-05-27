@@ -47,7 +47,6 @@ class InputInterface(ctk.CTk):
         self.page1 = ctk.CTkFrame(self.container)
         self.page2 = ctk.CTkFrame(self.container)
         self.page3 = ctk.CTkFrame(self.container)
-        self.page4 = ctk.CTkFrame(self.container)
 
         # Page 1 - Selection
         self.select_type = ctk.CTkLabel(self.page1, text="How do you want to fetch?", font=ROBOTO_TITLE_FONT_TUPLE)

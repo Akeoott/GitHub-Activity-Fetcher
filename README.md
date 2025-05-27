@@ -1,3 +1,8 @@
+# INFO
+Currently this is just for me getting better at coding!
+After im done with v4 I will start working on an actually light weight **python lib**
+I will make a serious project out of this after v4.
+
 # GitHub Activity Fetcher
 
 A lightweight Python tool that allows you to fetch and view GitHub user activity, either from their general profile or scoped to a specific repository. It uses the GitHub REST API v3 and supports optional or required token-based authentication depending on your query.

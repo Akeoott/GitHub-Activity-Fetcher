@@ -99,26 +99,32 @@ def main():
     except ImportError as e:
         e_type = "error"
         context = "A required module could not be imported."
+        logging.error(f"{context}: {e}")
         msg_handler.error_handeling(e, e_type, context, file_name)
     except FileNotFoundError as e:
         e_type = "error"
         context = "A required file was not found."
+        logging.error(f"{context}: {e}")
         msg_handler.error_handeling(e, e_type, context, file_name)
     except ValueError as e:
         e_type = "error"
         context = "A value error occurred. Please check your input values."
+        logging.error(f"A value error occurred in the code: {e}")
         msg_handler.error_handeling(e, e_type, context, file_name)
     except ConnectionError as e:
         e_type = "error"
         context = "A network connection error occurred. Please check your internet connection."
+        logging.error(f"A ConnectionError occurred: {e}")
         msg_handler.error_handeling(e, e_type, context, file_name)
     except TypeError as e:
         e_type = "error"
         context = "A TypeError occurred within the code."
+        logging.error(f"{context}: {e}")
         msg_handler.error_handeling(e, e_type, context, file_name)
     except Exception as e:
         e_type = "error"
         context = f"A {type(e).__name__} unexpectedly occurred."
+        logging.error(f"An {type(e).__name__} happened unexpectedly.")
         msg_handler.error_handeling(e, e_type, context, file_name)
 
     logging.info("Exiting...")
