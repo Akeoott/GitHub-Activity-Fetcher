@@ -44,7 +44,7 @@ class GitHubAPIClient:
                 logging.debug(f"API Status code: {response.status_code} {message}")
                 e_type: str = "error"
                 context: str = (
-                    f"A {type(e).__name__} unexpectedly occurred.<br>"
+                    f"An {type(e).__name__} unexpectedly occurred.<br>"
                     f"API Status code: {response.status_code} <b>{message}</b><br><br>"
                     f"More information under:<br>{RESTAPI_DOCS}"
                 )

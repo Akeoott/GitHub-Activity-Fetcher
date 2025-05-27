@@ -97,7 +97,7 @@ class DataHandler(ctk.CTk):
                 self.directory = filedialog.askdirectory(title="Select a directory")
                 if not self.directory:  # User cancelled the dialog
                     logging.info("Directory selection cancelled. Aborting save.")
-                    break
+                    sys.exit()
                 
                 if os.path.isdir(self.directory):
                     path = os.path.join(self.directory, f"{self.username}-data.json")
@@ -106,18 +106,18 @@ class DataHandler(ctk.CTk):
                     logging.info(f"Successfully created {self.username}-data.json")
                     msgbox.showinfo(title=INFO_TITLE, message=f"{self.username}-data.json was created at: {path}")
                     logging.info("Exiting...")
-                    break
+                    sys.exit()
                 else:
                     if msgbox.askretrycancel(title=ERROR_TITLE, message=f"Invalid path!"):
                         pass
                     else:
-                        break
+                        sys.exit()
             except PermissionError:
                 logging.warning("Permission error.")
                 if msgbox.askretrycancel(title=ERROR_TITLE, message=f"Invalid path!\nPermissionError!"):
                     pass
                 else:
-                    break
+                    sys.exit()
                 logging.warning("Attempting alternative path.")
 
     def _write_file(self, data, path):
