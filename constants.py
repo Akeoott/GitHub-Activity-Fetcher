@@ -1,5 +1,5 @@
 # constants.py
-VERSION = '4.0.0-alpha.3'
+VERSION = '4.0.0-beta'
 INFO_TITLE = f"GitHub Activity Fetcher v{VERSION}"
 WARNING_TITLE = f"WARNING - GitHub Activity Fetcher v{VERSION}"
 ERROR_TITLE = f'ERROR - GitHub Activity Fetcher v{VERSION}'
