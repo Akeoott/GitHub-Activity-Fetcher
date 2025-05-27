@@ -10,6 +10,7 @@ Library info:
             json
             logging
             requests
+            traceback
         visual:
             PyQt5
             pprint
