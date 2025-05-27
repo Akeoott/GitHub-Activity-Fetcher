@@ -2,7 +2,6 @@ import logging, requests, os, json
 from constants import STATUS_MESSAGES, RESTAPI_DOCS
 import msg_handler # error handeler
 from custom_exception import APIError
-from tkinter import messagebox as msgbox
 
 full_path = __file__
 file_name = os.path.basename(full_path)

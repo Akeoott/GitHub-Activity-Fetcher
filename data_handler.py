@@ -1,6 +1,5 @@
 import logging, sys, os, json, pprint, time
 from constants import ERROR_TITLE, INFO_TITLE
-import msg_handler # error handeler
 import customtkinter as ctk
 import tkinter as tk
 from tkinter import messagebox as msgbox
