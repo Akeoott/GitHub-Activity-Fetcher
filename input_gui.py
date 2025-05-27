@@ -1,10 +1,6 @@
-import logging, os, ctypes
+import logging, os
 from constants import ISSUE_INFO, WARNING_TITLE
-import msg_handler # error handeler
 import customtkinter as ctk
-from tkinter import messagebox as msgbox
-import sys
-import tkinter as tk
 
 import font_loader  # Loads font "self.roboto_font" and "self.roboto_title"
 

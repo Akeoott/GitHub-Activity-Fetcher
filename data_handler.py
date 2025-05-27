@@ -1,47 +1,96 @@
 import logging, sys, os, json, pprint, time
 from constants import ERROR_TITLE, INFO_TITLE
+import msg_handler # error handeler
+import customtkinter as ctk
 import tkinter as tk
 from tkinter import messagebox as msgbox
 from tkinter import filedialog
 
-class DataHandler:
-    def __init__(self, username, token):
+import font_loader  # Loads font "self.roboto_font" and "self.roboto_title"
+
+full_path = __file__
+file_name = os.path.basename(full_path)
+
+ctk.set_appearance_mode("dark")
+ctk.set_default_color_theme("dark-blue")
+
+class DataHandler(ctk.CTk):
+    """
+    A CustomTkinter GUI for displaying output from fetching GitHub activity.
+    Allows users to view the data and save it.
+    """
+    def __init__(self, username, data, limit, remaining, reset):
+        super().__init__()
         self.username = username
-        self.token = token
-
-    def display(self, data, rate_limit, rate_remaining, rate_reset):
-        pprint.pprint(data)
-
-        # Missing Data Info Display
-        if self.token is not None:
-            if data == []:
-                msgbox.showinfo(title=INFO_TITLE, message="It appears as there is no information present\nThis may be due to the user having a private profile or it not existing.\n\nThis program will now terminate, sorry!\n\nIf you belive that this is false, retry then open an issue on GitHub\n'Akeoots/GitHub-Activity-Fetcher/issues'.")
-                sys.exit()
-        else:
-            msgbox.showinfo(title=INFO_TITLE, message="Some information may not be present as you have not entered an access token!")
-
-        # Rate Limit Info Display
+        self.data = data
+        pprint.pprint(self.data)
+        self.limit = limit
+        self.remaining = remaining
+        self.reset = reset
         try:
-            reset_time = time.ctime(int(rate_reset)) if rate_reset.isdigit() else "Unknown"
+            reset_time = time.ctime(int(self.reset)) if self.reset.isdigit() else "Unknown"
         except Exception as e:
             logging.warning(f"Failed to parse rate reset time: {e}")
             reset_time = "Unknown"
-        
         rate_message = (
-            f"Rate Limit Information:\n\n"
-            f"Limit: {rate_limit} requests/hour\n"
-            f"Remaining: {rate_remaining}\n"
-            f"Resets at: {reset_time}"
+            f"Limit: {self.limit} requests/hour\n"
+            f"Remaining: {self.remaining}\n"
+            f"Resets at: {self.reset}"
         )
-        msgbox.showinfo(title=INFO_TITLE, message=rate_message)
+        ROBOTO_NORMAL_FONT_TUPLE = ("Roboto", 14)
+        ROBOTO_TITLE_FONT_TUPLE = ("Roboto", 18, "bold")
 
-        logging.info("Successfully displayed data")
+        self.geometry("375x300")
+        self.title("GitHub Activity Fetcher")
 
-    def save(self, data):
-        if msgbox.askyesno(title=INFO_TITLE, message=f"Save as json?\n(will overwrite existing files with the same username!)") is False:
+        self.container = ctk.CTkFrame(self)
+        self.container.pack(pady=20, padx=60, fill="both", expand=True)
+
+        self.page1 = ctk.CTkFrame(self.container)
+        self.page1.pack(fill="both", expand=True)
+        self.page2 = ctk.CTkFrame(self.container)
+        self.page2.pack(fill="both", expand=True)
+
+        # Page 1
+        ctk.CTkLabel(self.page1, text="Rate Limit Information:", font=ROBOTO_TITLE_FONT_TUPLE).pack(pady=10)
+        ctk.CTkLabel(
+            self.page1,
+            text=rate_message,
+            font=ROBOTO_NORMAL_FONT_TUPLE,
+            anchor="center",  # Center the widget in the frame
+            justify="left"    # But keep the text left-aligned within the label
+        ).pack(pady=10, anchor="center", fill="x")
+        ctk.CTkButton(self.page1, text="Continue", command=self._save_page, font=ROBOTO_NORMAL_FONT_TUPLE).pack(pady=10)
+        ctk.CTkButton(self.page1, text="Exit", command=self._exit, font=ROBOTO_NORMAL_FONT_TUPLE).pack(pady=10)
+
+        # Page 2
+        ctk.CTkLabel(self.page2, text="Save as JSON?", font=ROBOTO_TITLE_FONT_TUPLE).pack(pady=10)
+        ctk.CTkLabel(self.page2, text="Will overwrite existing files,\nwith the same username!", font=ROBOTO_NORMAL_FONT_TUPLE).pack(pady=10)
+        ctk.CTkButton(self.page2, text="Continue", command=self.save, font=ROBOTO_NORMAL_FONT_TUPLE).pack(pady=10)
+        ctk.CTkButton(self.page2, text="Exit", command=self._exit, font=ROBOTO_NORMAL_FONT_TUPLE).pack(pady=10)
+
+        self._show_page(self.page1)
+
+    def _show_page(self, page):
+        if page.winfo_ismapped():
             return
-        logging.debug("Attempting to save as JSON")
+        # Hide all pages
+        for p in [self.page1, self.page2]:
+            p.pack_forget()
+        # Show the selected one
+        page.pack(fill="both", expand=True)
+    
+    def _exit(self):
+        logging.info("User exited...")
+        sys.exit()
+        
+    def _save_page(self):
+        logging.info("Switched to saving")
+        self._show_page(self.page2) 
 
+    def save(self):
+        self.destroy()
+        logging.debug("Attempting to save as JSON")
         while True:
             try:
                 root = tk.Tk()
@@ -53,10 +102,11 @@ class DataHandler:
                 
                 if os.path.isdir(self.directory):
                     path = os.path.join(self.directory, f"{self.username}-data.json")
-                    self._write_file(data, path)
+                    self._write_file(self.data, path)
 
                     logging.info(f"Successfully created {self.username}-data.json")
                     msgbox.showinfo(title=INFO_TITLE, message=f"{self.username}-data.json was created at: {path}")
+                    logging.info("Exiting...")
                     break
                 else:
                     if msgbox.askretrycancel(title=ERROR_TITLE, message=f"Invalid path!"):

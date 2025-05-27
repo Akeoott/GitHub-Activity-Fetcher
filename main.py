@@ -91,10 +91,9 @@ def main():
         client = GitHubAPIClient(endpoint, username, useragent, token, repo)
         data, (limit, remaining, reset) = client.fetch_events()
 
-        handler = DataHandler(username, token)
-        handler.display(data, limit, remaining, reset)
-        handler.save(data)
-    
+        app = DataHandler(username, data, limit, remaining, reset)
+        app.mainloop()
+
     # If something completely unexpected happens, its gonna get catched!
     except ImportError as e:
         e_type = "error"
