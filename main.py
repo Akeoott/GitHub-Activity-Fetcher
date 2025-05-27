@@ -96,13 +96,29 @@ def main():
         handler.save(data)
     
     # If something completely unexpected happens, its gonna get catched!
+    except ImportError as e:
+        e_type = "error"
+        context = "A required module could not be imported."
+        msg_handler.error_handeling(e, e_type, context, file_name)
+    except FileNotFoundError as e:
+        e_type = "error"
+        context = "A required file was not found."
+        msg_handler.error_handeling(e, e_type, context, file_name)
+    except ValueError as e:
+        e_type = "error"
+        context = "A value error occurred. Please check your input values."
+        msg_handler.error_handeling(e, e_type, context, file_name)
+    except ConnectionError as e:
+        e_type = "error"
+        context = "A network connection error occurred. Please check your internet connection."
+        msg_handler.error_handeling(e, e_type, context, file_name)
     except TypeError as e:
-        e_type: str = "error"
-        context: str = "A TypeError occured within the code."
+        e_type = "error"
+        context = "A TypeError occurred within the code."
         msg_handler.error_handeling(e, e_type, context, file_name)
     except Exception as e:
-        e_type: str = "error"
-        context: str = f"A {type(e).__name__} unexpectedly ocurred."
+        e_type = "error"
+        context = f"A {type(e).__name__} unexpectedly occurred."
         msg_handler.error_handeling(e, e_type, context, file_name)
 
     logging.info("Exiting...")
