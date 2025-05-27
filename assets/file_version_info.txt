@@ -20,12 +20,12 @@ VSVersionInfo(
           [
             StringStruct('CompanyName', 'Akeoottt'),
             StringStruct('FileDescription', 'GitHub Activity Fetcher'),
-            StringStruct('FileVersion', '4.0.0-alpha.2'),
+            StringStruct('FileVersion', '4.0.0-alpha.3'),
             StringStruct('InternalName', 'GitHub Activity Fetcher'),
             StringStruct('LegalCopyright', '© Akeoott 2025'),
             StringStruct('OriginalFilename', 'main.exe'),
             StringStruct('ProductName', 'GitHub Activity Fetcher'),
-            StringStruct('ProductVersion', '4.0.0-alpha.2')
+            StringStruct('ProductVersion', '4.0.0-alpha.3')
           ]
         )
       ]

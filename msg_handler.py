@@ -4,12 +4,7 @@ from tkinter import messagebox
 from PyQt5.QtWidgets import QApplication, QMessageBox
 from PyQt5.QtCore import Qt # Import Qt for the TextFormat enum
 
-
-
-def result_display():
-    pass
-
-def except_handler(e: Exception, e_type: str, location: str, context: str):
+def error_display(e: Exception, e_type: str, location: str, context: str):
 
     e_type = e_type.capitalize()
 
@@ -86,4 +81,4 @@ def error_handeling(e: Exception, e_type: str, context: str, file_name: str):
     location: str = f"Line: {last_frame.lineno}\nFile: {file_name}\nFunction: {last_frame.name}"
     # Logging is here
     logging.error(f"An {type(e).__name__} happened unexpectedly. {location}")
-    except_handler(e=e, e_type=e_type, location=location, context=context)
+    error_display(e=e, e_type=e_type, location=location, context=context)

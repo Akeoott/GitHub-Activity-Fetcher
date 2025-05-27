@@ -1,100 +1,15 @@
 import logging, os, ctypes
-from constants import ISSUE_INFO, WARNING_TITLE, ERROR_TITLE
+from constants import ISSUE_INFO, WARNING_TITLE
 import msg_handler # error handeler
 import customtkinter as ctk
 from tkinter import messagebox as msgbox
 import sys
 import tkinter as tk
 
+import font_loader  # Loads font "self.roboto_font" and "self.roboto_title"
+
 full_path = __file__
 file_name = os.path.basename(full_path)
-
-def _resource_path(relative_path):
-    """
-    Get absolute path to resource, works for dev and for PyInstaller .exe.
-    """
-    try:
-        # PyInstaller creates a temp folder and stores path in _MEIPASS
-        base_path = sys._MEIPASS    # type: ignore
-    except AttributeError:
-        base_path = os.path.abspath(".")
-
-    return os.path.join(base_path, relative_path)
-
-def _load_font(font_path):
-    """
-    Loads a font from the given path for use in the application.
-    Compatible with Windows, macOS, Linux, and PyInstaller.exe.
-    Args:
-        font_path: The relative path to the .ttf font file.
-    Returns:
-        True if font loaded successfully, False otherwise.
-    """
-    path = _resource_path(font_path)
-    if not os.path.exists(path):
-        logging.warning(f"Font file not found: {font_path}")
-        e_type = "warning"
-        context = f"Font file not found: {font_path}. Reinstalling the program is recommended."
-        msg_handler.error_handeling(FileNotFoundError(font_path), e_type, context, file_name)
-        return False
-
-    try:
-        if sys.platform.startswith("win"):
-            try:
-                FR_PRIVATE = 0x10
-                result = ctypes.windll.gdi32.AddFontResourceExW(path, FR_PRIVATE, 0)
-                if result == 0:
-                    logging.warning(f"Failed to load font: {font_path}. AddFontResourceExW returned 0.")
-                    msgbox.showwarning(title=WARNING_TITLE, message=f"Failed to load font: {font_path}\n\nPlease retry or reinstall this program{ISSUE_INFO}\n\nTHIS PROGRAM WILL ATTEMPT TO CONTINUE!")
-                    return False
-                else:
-                    logging.info(f"Successfully loaded font: {font_path}")
-                    return True
-            except Exception as e:
-                logging.error(f"Error loading font on Windows: {e}")
-                e_type = "error"
-                context = f"Error occurred while loading font {font_path} on Windows."
-                msg_handler.error_handeling(e, e_type, context, file_name)
-                return False
-        else:
-            # For macOS and Linux, try to register font with Tkinter
-            try:
-                import tkinter.font as tkfont
-                root = tk.Tk()
-                root.withdraw()
-                try:
-                    tkfont.Font(root=root, name="Roboto", file=path)    # type: ignore
-                    logging.info(f"Successfully loaded font: {font_path}")
-                    root.destroy()
-                    return True
-                except tkfont.TclError as e:    # type: ignore
-                    logging.warning(f"TclError registering font with Tkinter: {e}")
-                    e_type = "warning"
-                    context = f"TclError occurred while registering font {font_path} with Tkinter."
-                    msg_handler.error_handeling(e, e_type, context, file_name)
-                    root.destroy()
-                    return False
-                except Exception as e:
-                    logging.warning(f"Unexpected error registering font with Tkinter: {e}")
-                    e_type = "warning"
-                    context = f"Unexpected error occurred while registering font {font_path} with Tkinter."
-                    msg_handler.error_handeling(e, e_type, context, file_name)
-                    root.destroy()
-                    return False
-            except ImportError as e:
-                logging.warning(f"tkinter.font could not be imported: {e}")
-                e_type = "warning"
-                context = f"tkinter.font could not be imported while loading font<br>{font_path}."
-                msg_handler.error_handeling(e, e_type, context, file_name)
-                return False
-    except Exception as e:
-        logging.warning(f"Error loading font: {font_path} - {e}")
-        e_type = "warning"
-        context = f"A {type(e).__name__} unexpectedly occurred.<br>Error loading font {font_path}"
-        msg_handler.error_handeling(e, e_type, context, file_name)
-    return False
-
-_load_font("assets/Roboto-VariableFont_wdth,wght.ttf")
 
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("dark-blue")
@@ -117,8 +32,9 @@ class InputInterface(ctk.CTk):
         self.endpoint_val = ""
         self.data_ready = False # Flag to indicate if data is ready
 
-        self.roboto_font = ("Roboto", 14)
-        self.roboto_title = ("Roboto", 18, "bold")
+        # In a fonts.py or similar module
+        ROBOTO_NORMAL_FONT_TUPLE = ("Roboto", 14)
+        ROBOTO_TITLE_FONT_TUPLE = ("Roboto", 18, "bold")
 
         self.geometry("375x390")
         self.title("GitHub Activity Fetcher")
@@ -134,49 +50,49 @@ class InputInterface(ctk.CTk):
         self.page4 = ctk.CTkFrame(self.container)
 
         # Page 1 - Selection
-        self.select_type = ctk.CTkLabel(self.page1, text="How do you want to fetch?", font=self.roboto_title)
+        self.select_type = ctk.CTkLabel(self.page1, text="How do you want to fetch?", font=ROBOTO_TITLE_FONT_TUPLE)
         self.select_type.pack(pady=10)
-        self.user_filter = ctk.CTkButton(self.page1, text="User Events", command=self._switch_user_input, font=self.roboto_font)
+        self.user_filter = ctk.CTkButton(self.page1, text="User Events", command=self._switch_user_input, font=ROBOTO_NORMAL_FONT_TUPLE)
         self.user_filter.pack(pady=10)
-        self.repo_filter = ctk.CTkButton(self.page1, text="Repo Specific User Events", command=self._switch_repo_input, font=self.roboto_font)
+        self.repo_filter = ctk.CTkButton(self.page1, text="Repo Specific User Events", command=self._switch_repo_input, font=ROBOTO_NORMAL_FONT_TUPLE)
         self.repo_filter.pack(pady=10)
 
         # Page 2 - User Events
-        ctk.CTkLabel(self.page2, text="User Events", font=self.roboto_title).pack(pady=10)
+        ctk.CTkLabel(self.page2, text="User Events", font=ROBOTO_TITLE_FONT_TUPLE).pack(pady=10)
 
-        self.username_user_entry = ctk.CTkEntry(self.page2, placeholder_text="Username*", font=self.roboto_font)
+        self.username_user_entry = ctk.CTkEntry(self.page2, placeholder_text="Username*", font=ROBOTO_NORMAL_FONT_TUPLE)
         self.username_user_entry.pack(pady=12, padx=10)
 
-        self.useragent_user_entry = ctk.CTkEntry(self.page2, placeholder_text="Useragent*", font=self.roboto_font)
+        self.useragent_user_entry = ctk.CTkEntry(self.page2, placeholder_text="Useragent*", font=ROBOTO_NORMAL_FONT_TUPLE)
         self.useragent_user_entry.pack(pady=12, padx=10)
 
-        self.token_user_entry = ctk.CTkEntry(self.page2, placeholder_text="Token (optional)", show="*", font=self.roboto_font)
+        self.token_user_entry = ctk.CTkEntry(self.page2, placeholder_text="Token (optional)", show="*", font=ROBOTO_NORMAL_FONT_TUPLE)
         self.token_user_entry.pack(pady=12, padx=10)
 
-        self.user_error_label = ctk.CTkLabel(self.page2, text="", text_color="red", font=self.roboto_font)
+        self.user_error_label = ctk.CTkLabel(self.page2, text="", text_color="red", font=ROBOTO_NORMAL_FONT_TUPLE)
         self.user_error_label.pack(pady=(0, 5))
 
-        ctk.CTkButton(self.page2, text="Fetch", font=self.roboto_font, command=self._fetch_user_events).pack(pady=10)
+        ctk.CTkButton(self.page2, text="Fetch", font=ROBOTO_NORMAL_FONT_TUPLE, command=self._fetch_user_events).pack(pady=10)
 
         # Page 3 - Repo Events
-        ctk.CTkLabel(self.page3, text="Repo Events", font=self.roboto_title).pack(pady=10)
+        ctk.CTkLabel(self.page3, text="Repo Events", font=ROBOTO_TITLE_FONT_TUPLE).pack(pady=10)
 
-        self.username_repo_entry = ctk.CTkEntry(self.page3, placeholder_text="Username*", font=self.roboto_font)
+        self.username_repo_entry = ctk.CTkEntry(self.page3, placeholder_text="Username*", font=ROBOTO_NORMAL_FONT_TUPLE)
         self.username_repo_entry.pack(pady=12, padx=10)
 
-        self.useragent_repo_entry = ctk.CTkEntry(self.page3, placeholder_text="Useragent*", font=self.roboto_font)
+        self.useragent_repo_entry = ctk.CTkEntry(self.page3, placeholder_text="Useragent*", font=ROBOTO_NORMAL_FONT_TUPLE)
         self.useragent_repo_entry.pack(pady=12, padx=10)
 
-        self.token_repo_entry = ctk.CTkEntry(self.page3, placeholder_text="Token*", show="*", font=self.roboto_font)
+        self.token_repo_entry = ctk.CTkEntry(self.page3, placeholder_text="Token*", show="*", font=ROBOTO_NORMAL_FONT_TUPLE)
         self.token_repo_entry.pack(pady=12, padx=10)
 
-        self.repo_repo_entry = ctk.CTkEntry(self.page3, placeholder_text="Repository*", font=self.roboto_font)
+        self.repo_repo_entry = ctk.CTkEntry(self.page3, placeholder_text="Repository*", font=ROBOTO_NORMAL_FONT_TUPLE)
         self.repo_repo_entry.pack(pady=12, padx=10)
 
-        self.repo_error_label = ctk.CTkLabel(self.page3, text="", text_color="red", font=self.roboto_font)
+        self.repo_error_label = ctk.CTkLabel(self.page3, text="", text_color="red", font=ROBOTO_NORMAL_FONT_TUPLE)
         self.repo_error_label.pack(pady=(0, 5))
 
-        ctk.CTkButton(self.page3, text="Fetch", command=self._fetch_repo_events, font=self.roboto_font).pack(pady=10)
+        ctk.CTkButton(self.page3, text="Fetch", command=self._fetch_repo_events, font=ROBOTO_NORMAL_FONT_TUPLE).pack(pady=10)
 
         self._show_page(self.page1)
 
