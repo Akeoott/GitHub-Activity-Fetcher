@@ -1,3 +1,8 @@
+# INFO
+Currently this is just for me getting better at coding!
+After im done with v4 I will start working on an actually light weight **python lib**
+I will make a serious project out of this after v4.
+
 # GitHub Activity Fetcher
 
 A lightweight Python tool that allows you to fetch and view GitHub user activity, either from their general profile or scoped to a specific repository. It uses the GitHub REST API v3 and supports optional or required token-based authentication depending on your query.
@@ -14,20 +19,10 @@ A lightweight Python tool that allows you to fetch and view GitHub user activity
 - Pretty-prints structured event data
 - Allows **JSON saving** of fetched data (with overwrite and fallback directory support)
 - Includes simple CLI input flow and graceful exit handling
-- Designed with basic theming and color-coded prompts for better UX
+- Designed with `customtkinter` and `PyQt5`
 
 ---
 
-## 📦 Structure Overview
-
-| File | Class | Purpose |
-|---------|---------|---------|
-| `main.py` | Calling Classes | Running the entire program and calling the classes |
-| `input_handler.py` | UserInputHandler | As the name implies it handles user input |
-| `github_client.py` | GitHubAPIClient | Calls the REST API to fetch you data |
-| `data_handler` | DataHandler | Handles all the information from `github_client.py` |
-
----
 
 ## 🔐 Authentication Info
 
@@ -47,10 +42,9 @@ You will be prompted to choose between:
 1. General user activity
 2. Repo-specific activity
 
-You'll also provide a GitHub username, optional/requisite token, and an application name (used in the User-Agent header).
+You'll also provide a GitHub username, optional/requisite token and a User-Agent header.
 
 After fetching:
-- Event data is printed to the console
 - You'll be asked if you want to save the output to a JSON file
 
 ---
@@ -95,26 +89,31 @@ This program is **released as an executable**, but if you’re on Linux or are a
    ```
    If Python 3 is not installed, install it via your package manager (e.g., `sudo apt install python3`).
 
-2. **Install the `requests` module** if it’s not installed already:
-   ```bash
-   pip3 install requests
-   ```
+2. **Install all the required modules** if it’s not installed already:
 
-3. **Run the program directly** from the source code of the archived versions or run the latest update:
-   * [Archived versions](https://github.com/Akeoottt/GitHub-Activity-Fetcher/tree/main/archive/source-code)
-     * v1.2.1.py
-     * v1.1.0.py
-   * [Most recent update](https://github.com/Akeoottt/GitHub-Activity-Fetcher/blob/main/main.py)
-     * main.py
+   Functional:
+       `os`
+       `sys`
+       `time`
+       `json`
+       `logging`
+       `requests`
+
+   Visual:
+       `PyQt5`
+       `pprint`
+       `ctypes`
+       `tkinter`
+       `customtkinter`
+
+3. **Run the program directly** from the source code of the selected tag aka version:
+   - [All tags aka version](https://github.com/Akeoottt/GitHub-Activity-Fetcher/tags)
    
-
 This will allow you to interact with the program as expected. Make sure to follow the prompts to fetch GitHub activity.
 
 ---
 
 ## ✨ Credit
 
-- Terminal coloring uses ANSI sequences; special thanks to `CosmicBit128` for reference styling and code review
+- Terminal coloring uses ANSI sequences. special thanks to `CosmicBit128` for reference styling and code review
 - Developed by **Akeoott**
-
-https://roadmap.sh/projects/github-user-activity

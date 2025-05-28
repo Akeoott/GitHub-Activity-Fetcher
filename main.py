@@ -1,57 +1,131 @@
-import logging, sys
-from input_handler import UserInputHandler
-from github_client import GitHubAPIClient
-from data_handler import DataHandler
+import logging, sys, os
+from constants import VERSION, ERROR_TITLE, ISSUE_INFO
+import msg_handler # error handeler
+from tkinter import messagebox as msgbox
 
-RESET, GREEN, RED = '\033[0m', '\033[92m', '\033[91m'
+full_path = __file__
+file_name = os.path.basename(full_path)
 
-VERSION = '3.0.1'
+"""
+_______________________
+How this program works:
+
+1.
+main calls input_gui
+input_gui returns to main
+
+2.
+main calls github_client
+github_client returns to main
+
+3.
+main calls data_handler
+data_handler finishes operation
+
+______________
+In exceptions:
+
+Any file calls msg_handler
+msg_handler manages error and decides if continue or not
+
+custom_exception contains one custom exception
+
+__________
+Constants:
+
+constants contains all constants
+"""
 
 # LogRecord attributes: https://docs.python.org/3/library/logging.html#logrecord-attributes
 
 def configure_logging():
-    if input(f"Activate {GREEN}logging{RESET} + {GREEN}save{RESET}? (y/n): ").lower() == "y":
+    root_logger = logging.getLogger()
+    if root_logger.hasHandlers():
+        return
+    
+    logging_req = msgbox.askyesnocancel(title="GitHub Activity Fetcher", message=f"Activate logging + save log?", icon="info")
+
+    if logging_req is True:
         logging.basicConfig(
             format='%(levelname)s (%(asctime)s): %(message)s (Line: %(lineno)d [%(filename)s])',
             datefmt='%d/%m/%Y %I:%M:%S %p',
             filename='Activity-Fetcher-Log.log',
             level=logging.DEBUG
         )
-    else:
+    elif logging_req is False:
         class NullHandler(logging.Handler):
             def emit(self, record): pass
-        logging.getLogger().addHandler(NullHandler())
-        logging.getLogger().setLevel(logging.CRITICAL + 1)
+        root_logger.addHandler(NullHandler())
+        root_logger.setLevel(logging.CRITICAL + 1)
+    else:
+        sys.exit()
 
 configure_logging()
 
 logging.info(f"Version {VERSION}")
 
+try:
+    from input_gui import InputInterface
+    from github_client import GitHubAPIClient
+    from data_handler import DataHandler
+except ImportError as e:
+    logging.error(f"ImportError: {e}")
+    msgbox.showerror(title=ERROR_TITLE, message=f"Required modules could not be imported. Exiting.\n\n{ISSUE_INFO}")
+    sys.exit()
+
+"""
+Main function resides here.
+This is where all other files get called to make out the entire program.
+"""
+
 def main():
     try:
-        input_handler = UserInputHandler()
-        endpoint, username, useragent, repo, token = input_handler.prompt()
+        input_handler = InputInterface()
+        # Call the method that runs the GUI and returns inputs
+        endpoint, username, useragent, token, repo = input_handler.get_inputs()
 
-        client = GitHubAPIClient(endpoint, username, useragent, repo, token)
+        if not endpoint: # Or check any other essential value like username
+            logging.warning("No input provided from the GUI. Exiting.")
+            sys.exit()
+
+        client = GitHubAPIClient(endpoint, username, useragent, token, repo)
         data, (limit, remaining, reset) = client.fetch_events()
 
-        handler = DataHandler(username, token)
-        handler.display(data, limit, remaining, reset)
-        handler.save(data)
+        app = DataHandler(username, data, limit, remaining, reset)
+        app.mainloop()
 
     # If something completely unexpected happens, its gonna get catched!
+    except ImportError as e:
+        e_type = "error"
+        context = "A required module could not be imported."
+        logging.error(f"{context}: {e}")
+        msg_handler.error_handeling(e, e_type, context, file_name)
+    except FileNotFoundError as e:
+        e_type = "error"
+        context = "A required file was not found."
+        logging.error(f"{context}: {e}")
+        msg_handler.error_handeling(e, e_type, context, file_name)
+    except ValueError as e:
+        e_type = "error"
+        context = "A value error occurred. Please check your input values."
+        logging.error(f"A value error occurred in the code: {e}")
+        msg_handler.error_handeling(e, e_type, context, file_name)
+    except ConnectionError as e:
+        e_type = "error"
+        context = "A network connection error occurred. Please check your internet connection."
+        logging.error(f"A ConnectionError occurred: {e}")
+        msg_handler.error_handeling(e, e_type, context, file_name)
     except TypeError as e:
-        logging.error(f"A TypeError stopped the program: {type(e).__name__} {e}")
-        print(f"\n{RED}Unexpected error{RESET}")
-        print(f"{RED}{type(e).__name__}{RESET}: {e}")
-        print("\nPlease report this issue on GitHub 'Akeoots/GitHub-Activity-Fetcher/issues'")
+        e_type = "error"
+        context = "A TypeError occurred within the code."
+        logging.error(f"{context}: {e}")
+        msg_handler.error_handeling(e, e_type, context, file_name)
     except Exception as e:
-        logging.error(f"An exception stopped the program: {type(e).__name__} {e}")
-        print(f"\n{RED}Unexpected error{RESET}")
-        print(f"{RED}{type(e).__name__}{RESET}: {e}")
-        print("\nPlease report this issue on GitHub 'Akeoots/GitHub-Activity-Fetcher/issues'")
+        e_type = "error"
+        context = f"A {type(e).__name__} unexpectedly occurred."
+        logging.error(f"An {type(e).__name__} happened unexpectedly.")
+        msg_handler.error_handeling(e, e_type, context, file_name)
 
-    input("\nPress Enter To Exit...")
     logging.info("Exiting...")
     sys.exit()
 
