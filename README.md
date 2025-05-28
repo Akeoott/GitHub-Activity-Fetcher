@@ -1,7 +1,7 @@
 # INFO
-Currently this is just for me getting better at coding!
-After im done with v4 I will start working on an actually light weight **python lib**
-I will make a serious project out of this after v4.
+* Currently this is just for me getting better at coding!
+  * After im done with v4 I will start working on an actually light weight **python lib**
+  * I will make a serious project out of this after v4 is in beta.
 
 # GitHub Activity Fetcher
 
@@ -108,8 +108,16 @@ This program is **released as an executable**, but if you’re on Linux or are a
 
 3. **Run the program directly** from the source code of the selected tag aka version:
    - [All tags aka version](https://github.com/Akeoottt/GitHub-Activity-Fetcher/tags)
-   
+
 This will allow you to interact with the program as expected. Make sure to follow the prompts to fetch GitHub activity.
+
+> [!WARNING]
+> Some tags are missing the correct content so make sure to check the version in `constants.py` or on older versions `main.py` at the top.
+> Known missing versions:
+>   * v4.0.0-alpha.1
+>   * v4.0.0-alpha.2
+
+
 
 ---
 
