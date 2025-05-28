@@ -76,9 +76,26 @@ def error_handeling(e: Exception, e_type: str, context: str, file_name: str):
     # First two variables needed to reach 'exc_traceback'
     exc_type, exc_value, exc_traceback = sys.exc_info()
     frames = traceback.extract_tb(exc_traceback)
-    last_frame = frames[-1]
-
-    location: str = f"Line: {last_frame.lineno}\nFile: {file_name}\nFunction: {last_frame.name}"
-    # Logging is here
-    logging.error(f"An {type(e).__name__} happened unexpectedly. {location}")
-    error_display(e=e, e_type=e_type, location=location, context=context)
+    try:
+        last_frame = frames[-1]
+        location: str = f"Line: {last_frame.lineno}\nFile: {file_name}\nFunction: {last_frame.name}"
+        # Logging is here
+        logging.error(f"An {type(e).__name__} happened unexpectedly. {location}")
+        error_display(e=e, e_type=e_type, location=location, context=context)
+    except IndexError as e:
+        logging.critical(f"An {type(e).__name__} ocurred. {e}")
+        app = QApplication(sys.argv)
+        msg_box = QMessageBox()
+        msg_box.setWindowTitle(ERROR_TITLE)
+        msg_box.setIcon(QMessageBox.Critical)
+        message_text = (
+            f"<h3>An <span style='color:red;'>critical error</span> has ocurred</h3>"
+            "Please activate logging, repeat what you did and open an issue on GitHub<br>'Akeoottt/GitHub-Activity-Fetcher/issues<br>"
+            "Context:<br>"
+            f"{e}"
+        )
+        msg_box.setText(message_text)
+        msg_box.setTextFormat(Qt.RichText)  # type: ignore
+        msg_box.setStandardButtons(QMessageBox.Close)
+        msg_box.exec_()
+        sys.exit()
