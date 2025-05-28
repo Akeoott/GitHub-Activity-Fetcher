@@ -11,6 +11,7 @@ class GitHubAPIClient:
         self.endpoint = endpoint
         self.username = username
         self.useragent = useragent
+        self.repo = repo
         self.token = token
         self.repo = repo
         self.headers = self._build_headers()
