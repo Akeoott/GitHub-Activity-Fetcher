@@ -100,11 +100,6 @@ def main():
         context = "A required module could not be imported."
         logging.error(f"{context}: {e}")
         msg_handler.error_handeling(e, e_type, context, file_name)
-    except FileNotFoundError as e:
-        e_type = "error"
-        context = "A required file was not found."
-        logging.error(f"{context}: {e}")
-        msg_handler.error_handeling(e, e_type, context, file_name)
     except ValueError as e:
         e_type = "error"
         context = "A value error occurred. Please check your input values."
