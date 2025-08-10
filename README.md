@@ -1,7 +1,8 @@
 # INFO
-* Currently this is just for me getting better at coding!
-  * After im done with v4 I will start working on an actually light weight **python lib**
-  * I will make a serious project out of this after v4 is in beta.
+* This is my first project ever.<br>
+I started it do get better at coding and to have something to work on.<br>
+I'm already done with this phase.<bt>
+This project will not be maintained anymore.
 
 # GitHub Activity Fetcher
 
