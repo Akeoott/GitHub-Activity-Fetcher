@@ -1,10 +1,13 @@
-# INFO
+# THIS REPO IS ARCHIVED!
+Reason is cause im way past this project i used to get into coding.
+
+##  INFO
 * This is my first project ever.<br>
 I started it do get better at coding and to have something to work on.<br>
 I'm already done with this phase.<bt>
 This project will not be maintained anymore.
 
-# GitHub Activity Fetcher
+## GitHub Activity Fetcher
 
 A lightweight Python tool that allows you to fetch and view GitHub user activity, either from their general profile or scoped to a specific repository. It uses the GitHub REST API v3 and supports optional or required token-based authentication depending on your query.
 
